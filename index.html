@@ -50,7 +50,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm print-hide">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <i class="fa-solid fa-building mx-2"></i> Inteligência Corporativa | Classificação Setorial de Empresas
+                <i class="fa-solid fa-building mx-2"></i> Inteligência Corporativa | Sistema de Classificação Industrial
             </a>
         </div>
     </nav>
@@ -102,7 +102,7 @@
             <!-- Indicador de Carregamento -->
             <div id="loadingIndicator" class="text-center my-5 d-none print-hide">
                 <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-                <p class="mt-2 text-muted">Analisando atividades econômicas e cruzando bases de referência...</p>
+                <p class="mt-2 text-muted">Consultando API oficial e cruzando base de abrangência...</p>
             </div>
 
             <!-- Resultados da Consulta Individual -->
@@ -134,7 +134,7 @@
                                         <li class="list-group-item d-flex justify-content-between"><strong>Nome Fantasia:</strong> <span id="valNomeFantasia" class="text-end"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>CNPJ:</strong> <span id="valCnpj" class="text-end font-monospace"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Porte:</strong> <span id="valPorte" class="text-end"></span></li>
-                                        <li class="list-group-item d-flex justify-content-between"><strong>Perfil Definido:</strong> <span id="valPerfil" class="text-end fw-bold text-primary"></span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><strong>Perfil:</strong> <span id="valPerfil" class="text-end fw-bold text-primary"></span></li>
                                     </ul>
                                 </div>
                                 <div class="col-md-6">
@@ -142,7 +142,6 @@
                                         <li class="list-group-item d-flex justify-content-between"><strong>Município / Estado:</strong> <span id="valLocalizacao" class="text-end"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Situação Cadastral:</strong> <span id="valSituacao" class="text-end"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Data de Abertura:</strong> <span id="valAbertura" class="text-end"></span></li>
-                                        <li class="list-group-item d-flex justify-content-between"><strong>Natureza Jurídica:</strong> <span id="valNatureza" class="text-end"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Qtd CNAEs Secundárias:</strong> <span id="valQtdSecundarias" class="text-end badge bg-secondary rounded-pill"></span></li>
                                     </ul>
                                 </div>
@@ -150,7 +149,7 @@
 
                             <!-- Caixa de Detalhamento da Análise Industrial -->
                             <div class="mt-4 p-3 rounded bg-light border" id="boxMotivacaoIndustrial">
-                                <h6 class="fw-bold mb-2"><i class="fa-solid fa-clipboard-check me-2 text-success"></i> Resultado da Análise de Enquadramento Industrial:</h6>
+                                <h6 class="fw-bold mb-2"><i class="fa-solid fa-clipboard-check me-2 text-success"></i> Resultado da Análise Industrial:</h6>
                                 <p class="mb-0 text-muted small" id="textoMotivacaoIndustrial"></p>
                             </div>
                         </div>
@@ -160,12 +159,12 @@
                     <div class="row g-4">
                         <div class="col-12">
                             <div class="card shadow-sm">
-                                <div class="card-header bg-light"><i class="fa-solid fa-industry me-2"></i> Mapeamento Completo de Atividades Econômicas</div>
+                                <div class="card-header bg-light"><i class="fa-solid fa-industry me-2"></i> Mapeamento de Atividades Econômicas</div>
                                 <div class="card-body">
                                     <h6 class="text-primary fw-bold">Atividade Econômica Principal</h6>
                                     <p class="mb-3 p-2 bg-light rounded border" id="valCnaePrincipal"></p>
                                     
-                                    <h6 class="text-secondary fw-bold mt-3">Atividades Econômicas Secundárias (Todas Analisadas)</h6>
+                                    <h6 class="text-secondary fw-bold mt-3">Atividades Econômicas Secundárias</h6>
                                     <div class="table-responsive">
                                         <table class="table table-sm table-hover align-middle small mb-0">
                                             <thead class="table-light">
@@ -173,7 +172,7 @@
                                                     <th>Código</th>
                                                     <th>Descrição da Atividade</th>
                                                     <th>Tipo</th>
-                                                    <th>Classificação na Base</th>
+                                                    <th>Classificação Base</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="listCnaeSecundarioTable">
@@ -194,7 +193,7 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i> Processamento de Lista em Lote</h5>
-                    <p class="text-muted small">Cole abaixo múltiplos CNPJs (um por linha, separados por vírgula ou ponto e vírgula). O sistema analisará o conjunto integral de CNAEs de cada empresa com base nos registros oficiais:</p>
+                    <p class="text-muted small">Cole abaixo múltiplos CNPJs (um por linha, separados por vírgula ou ponto e vírgula):</p>
                     <div class="mb-3">
                         <textarea id="batchInput" class="form-control font-monospace" rows="6" placeholder="00000000000100&#10;11.111.111/0001-11"></textarea>
                     </div>
@@ -212,7 +211,7 @@
 
             <!-- Tabela de Resultados do Lote -->
             <div id="batchResultContainer" class="card shadow-sm d-none mb-4">
-                <div class="card-header bg-dark text-white"><i class="fa-solid fa-table me-2"></i> Resultados Consolidados da Análise Industrial</div>
+                <div class="card-header bg-dark text-white"><i class="fa-solid fa-table me-2"></i> Resultados Consolidados</div>
                 <div class="card-body p-0">
                     <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
                         <table class="table table-striped table-hover align-middle small mb-0" id="batchTable">
@@ -328,11 +327,7 @@
                 const parts = dateString.split('-');
                 return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateString;
             },
-            formatCurrency(value) {
-                if (value === null || value === undefined) return 'Não informado';
-                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-            },
-            // Normalização estrita exigida: remove formatação, espaços e caracteres não numéricos
+            // Normalização estrita: remove pontos, barras, hífens, espaços e caracteres não numéricos
             normalizeCnae(code) {
                 if (!code) return '';
                 return code.toString().replace(/\D/g, '');
@@ -340,28 +335,60 @@
         };
 
         // =========================================================================
-        // CAMADA DE API MULTI-FALLBACK (ANTI-FIREWALL & ROBUSTA)
+        // CAMADA DE API COM TRATAMENTO ROBUSTO DE ERROS E LOGS DETALHADOS
         // =========================================================================
         const API = {
             async consultarCNPJ(cnpj) {
                 const cnpjLimpo = Utils.cleanCNPJ(cnpj);
                 const urlDireta = `https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`;
-                
+                const timestamp = new Date().toISOString();
+
                 try {
                     const response = await fetch(urlDireta);
+                    
                     if (!response.ok) {
-                        if (response.status === 404) throw new Error("CNPJ_NAO_EXISTE");
-                        if (response.status === 429) throw new Error("LIMITE_EXCEDIDO");
-                        if (response.status >= 500) throw new Error("INSTABILIDADE_RECEITA");
-                        throw new Error(`ERRO_API_${response.status}`);
-                    }
-                    return await response.json();
-                } catch (error) {
-                    if (error.message === "CNPJ_NAO_EXISTE") throw new Error("CNPJ não encontrado na base nacional.");
-                    if (error.message === "LIMITE_EXCEDIDO") throw new Error("Muitas consultas em curto espaço de tempo. Aguarde um momento.");
-                    if (error.message === "INSTABILIDADE_RECEITA") throw new Error("Base da Receita Federal temporariamente instável.");
-                    if (error.message.startsWith("ERRO_API_")) throw new Error("Erro na comunicação com a API oficial.");
+                        const status = response.status;
+                        let errorText = "";
+                        try { errorText = await response.text(); } catch(e) {}
 
+                        // Logs detalhados exigidos pelo backend sênior
+                        console.error(`[API Logger] Data: ${timestamp} | CNPJ: ${cnpjLimpo} | HTTP Status: ${status} | Resposta: ${errorText}`);
+
+                        if (status === 400 || status === 422) {
+                            throw new Error("CNPJ inválido ou mal formatado segundo as regras da API oficial (HTTP " + status + ").");
+                        }
+                        if (status === 401 || status === 403) {
+                            throw new Error("Acesso negado ou restrito na API oficial (HTTP " + status + ").");
+                        }
+                        if (status === 404) {
+                            throw new Error("CNPJ não encontrado na base de dados da Receita Federal.");
+                        }
+                        if (status === 429) {
+                            throw new Error("Limite de requisições excedido (Rate Limit - HTTP 429). Aguarde alguns instantes.");
+                        }
+                        if (status >= 500) {
+                            throw new Error("Instabilidade temporária nos servidores da Receita Federal ou BrasilAPI (HTTP " + status + ").");
+                        }
+                        throw new Error(`Erro na API oficial (Código HTTP ${status}).`);
+                    }
+
+                    const json = await response.json();
+                    if (!json || !json.cnpj) {
+                        console.warn(`[API Logger] Resposta vazia ou JSON inválido para CNPJ: ${cnpjLimpo} em ${timestamp}`);
+                        throw new Error("A API retornou uma resposta vazia ou em formato inválido.");
+                    }
+                    return json;
+
+                } catch (error) {
+                    // Se o erro já foi tratado e lançado acima com throw new Error customizado, repassamos
+                    if (!error.message.includes("Failed to fetch") && !error.message.includes("NetworkError") && !error.message.includes("aborted")) {
+                        throw error;
+                    }
+
+                    // Caso seja erro real de rede / conectividade / DNS / Timeout
+                    console.error(`[API Network Error Logger] Data: ${timestamp} | CNPJ: ${cnpjLimpo} | Erro: ${error.message}`, error);
+
+                    // Tentativa de fallback com Proxies para garantir resiliência caso a rede bloqueie acesso direto
                     try {
                         const resProxy1 = await fetch(`https://api.codetabs.com/v1/proxy?quest=${urlDireta}`);
                         if (!resProxy1.ok) throw new Error();
@@ -372,6 +399,7 @@
                             if (!resProxy2.ok) throw new Error();
                             return await resProxy2.json();
                         } catch (errProxy2) {
+                            // Conforme regra: "Falha de conexão com a API de consulta. Verifique sua rede." só deve ser exibida em problemas reais de conectividade
                             throw new Error("Falha de conexão com a API de consulta. Verifique sua rede.");
                         }
                     }
@@ -380,11 +408,10 @@
         };
 
         // =========================================================================
-        // BASE DE ABRANGÊNCIA INDUSTRIAL & MOTOR DE CLASSIFICAÇÃO
+        // BASE DE ABRANGÊNCIA DOS SINDICATOS (REFERÊNCIA INTERNA INDUSTRIAL)
         // =========================================================================
-        // Contém os códigos CNAE (normalizados) de referência para classificação industrial
-        const BaseAbrangenciaIndustrial = new Set([
-            // Indústria de Transformação e Extrativa (amostra abrangente de referência industrial)
+        // Contém todos os códigos CNAE abrangidos pelos sindicatos associados à FIRJAN (normalizados)
+        const BaseAbrangenciaSindicatos = new Set([
             "0111301","0111302","0111303","0112101","0112102","0113000","0114800","0115600","0116401","0116402","0119999",
             "0500101","0500102","0600001","0600002","0710301","0710302","0721901","0721902","0729401","0729402","0729403",
             "0810001","0810002","0810003","0810099","0891600","0892401","0892402","0893200","0899199","0910601","0910602",
@@ -423,13 +450,16 @@
             "3329599"
         ]);
 
+        // =========================================================================
+        // MOTOR DE ANÁLISE DE CNAES & CLASSIFICAÇÃO INDUSTRIAL
+        // =========================================================================
         const CnaeAnalyzer = {
             analisarEmpresaCompleta(cnaePrincipalCod, cnaePrincipalDesc, cnaesSecundarios = [], analisarTodas = true) {
                 let listaCompletaAnalise = [];
 
-                // 1. Analisar CNAE Principal
+                // 1. Normalizar e verificar CNAE Principal
                 const normPrincipal = Utils.normalizeCnae(cnaePrincipalCod);
-                const isIndPrincipal = BaseAbrangenciaIndustrial.has(normPrincipal);
+                const isIndPrincipal = BaseAbrangenciaSindicatos.has(normPrincipal);
                 
                 listaCompletaAnalise.push({
                     codigo: cnaePrincipalCod || "",
@@ -439,11 +469,11 @@
                     isIndustrial: isIndPrincipal
                 });
 
-                // 2. Analisar CNAEs Secundárias
+                // 2. Normalizar e verificar CNAEs Secundárias
                 if (analisarTodas && Array.isArray(cnaesSecundarios)) {
                     cnaesSecundarios.forEach(sec => {
                         const normSec = Utils.normalizeCnae(sec.codigo);
-                        const isIndSec = BaseAbrangenciaIndustrial.has(normSec);
+                        const isIndSec = BaseAbrangenciaSindicatos.has(normSec);
                         listaCompletaAnalise.push({
                             codigo: sec.codigo || "",
                             codigoNormalizado: normSec,
@@ -454,7 +484,7 @@
                     });
                 }
 
-                // 3. Verificação de Ocorrência na Base de Abrangência
+                // 3. Verificação na Base de Abrangência dos Sindicatos
                 const cnaesIndustriaisEncontradas = listaCompletaAnalise.filter(item => item.isIndustrial);
                 const possuiIndustrial = cnaesIndustriaisEncontradas.length > 0;
 
@@ -463,23 +493,21 @@
 
                 if (possuiIndustrial) {
                     listaCodigosIndustriaisFormatados = cnaesIndustriaisEncontradas.map(i => i.codigo);
-                    const detalheItens = cnaesIndustriaisEncontradas.map(i => `[CNAE ${i.codigo} - ${i.descricao} (${i.tipo})]`).join("; ");
-                    motivacaoIndustrial = `CNAEs industriais identificadas na Base de Abrangência: ${detalheItens}.`;
+                    motivacaoIndustrial = `CNAEs Industriais encontradas:\n` + cnaesIndustriaisEncontradas.map(i => `• ${i.codigo}`).join('\n');
                 } else {
-                    motivacaoIndustrial = "Nenhuma das CNAEs da empresa foi localizada na Base de Abrangência Industrial.";
+                    motivacaoIndustrial = "Nenhuma das CNAEs está presente na base de abrangência.";
                 }
 
-                // 4. Perfil da Empresa (mantém a lógica padrão atual se não for industrial)
+                // 4. Perfil da Empresa (mantém a lógica atual se não for industrial)
                 let perfilGeral = "Comércio / Serviços";
                 let macroSetorGeral = "Diversos / Outros";
                 let carteiraGeral = "Diversos";
 
                 if (possuiIndustrial) {
                     perfilGeral = "Indústria";
-                    macroSetorGeral = "Indústria de Transformação / Extrativa";
+                    macroSetorGeral = "Indústria";
                     carteiraGeral = "Industrial";
                 } else {
-                    // Lógica padrão de fallback para Comércio / Serviços
                     const todasDescricoes = listaCompletaAnalise.map(i => i.descricao.toLowerCase()).join(" ");
                     const temComercio = todasDescricoes.includes("comércio") || todasDescricoes.includes("varejista") || todasDescricoes.includes("atacadista");
                     const temServicos = todasDescricoes.includes("serviço") || todasDescricoes.includes("tecnologia") || todasDescricoes.includes("software");
@@ -604,7 +632,7 @@
             }
 
             function preencherFichaExecutiva(d, analise) {
-                // Dados Básicos exigidos no resumo
+                // Resumo exigido no briefing
                 document.getElementById('valRazaoSocial').textContent = d.razao_social || '-';
                 document.getElementById('valNomeFantasia').textContent = d.nome_fantasia || 'Não informado';
                 document.getElementById('valCnpj').textContent = Utils.formatCNPJ(d.cnpj);
@@ -613,7 +641,6 @@
                 document.getElementById('valLocalizacao').textContent = `${d.municipio || '-'}/${d.uf || '-'}`;
                 document.getElementById('valSituacao').textContent = d.descricao_situacao_cadastral || '-';
                 document.getElementById('valAbertura').textContent = Utils.formatDate(d.data_inicio_atividade);
-                document.getElementById('valNatureza').textContent = d.natureza_juridica || '-';
                 document.getElementById('valQtdSecundarias').textContent = d.cnaes_secundarios ? d.cnaes_secundarios.length : 0;
 
                 // Badge Industrial no Header
@@ -626,11 +653,12 @@
                     badgeHeader.innerHTML = `<i class="fa-solid fa-circle-xmark me-1"></i> ❌ Não possui CNAE Industrial`;
                 }
 
-                // Texto Motivação (exibe códigos industriais encontrados, sem menção a sindicatos)
+                // Texto Motivação (exibe exclusivamente as CNAEs industriais sem menção a sindicatos)
+                document.getElementById('textoMotivacaoIndustrial').style.whiteSpace = "pre-line";
                 document.getElementById('textoMotivacaoIndustrial').textContent = analise.motivacaoIndustrial;
 
                 // Resumo Executivo
-                const resumo = `A empresa <strong>${d.razao_social}</strong> (CNPJ: ${Utils.formatCNPJ(d.cnpj)}), localizada em ${d.municipio}/${d.uf}, enquadrada como <strong>${analise.perfil}</strong>, possui porte <strong>${d.porte || 'N/A'}</strong>. Atividade principal: <strong>${d.cnae_fiscal} - ${d.cnae_fiscal_descricao}</strong>, com ${d.cnae_secundarios ? d.cnae_secundarios.length : 0} atividade(s) secundária(s).`;
+                const resumo = `A empresa <strong>${d.razao_social}</strong> (CNPJ: ${Utils.formatCNPJ(d.cnpj)}), localizada em ${d.municipio}/${d.uf}, enquadrada como <strong>${analise.perfil}</strong>, possui porte <strong>${d.porte || 'N/A'}</strong>. Atividade principal: <strong>${d.cnae_fiscal} - ${d.cnae_fiscal_descricao}</strong>, com ${d.cnae_secundarios ? d.cnae_secundarios.length : 0} atividade(s) secundária(s). Situação Cadastral: <em>${d.descricao_situacao_cadastral || '-'}</em> (Aberta em ${Utils.formatDate(d.data_inicio_atividade)}).`;
                 document.getElementById('resumoTexto').innerHTML = resumo;
 
                 // CNAE Principal
