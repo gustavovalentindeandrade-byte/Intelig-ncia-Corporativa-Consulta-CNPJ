@@ -13,7 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://avimtkqdcmdnvkvllnpq.supabase.co';
-        const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aW10a3FkY21kbnZrdmxsbnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzI4NjAsImV4cCI6MjEwMTUwODg2MH0.-dm77ElvB7_HogpTY0ZF2_xWKYqYFfYWA55zDWoWSn4;
+        // CORREÇÃO: Chave agora está entre aspas simples ('...')
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aW10a3FkY21kbnZrdmxsbnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzI4NjAsImV4cCI6MjEwMTUwODg2MH0.-dm77ElvB7_HogpTY0ZF2_xWKYqYFfYWA55zDWoWSn4';
         
         let supabase = null;
         if (window.supabase) {
@@ -60,6 +61,9 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        .cursor-pointer { cursor: pointer; transition: 0.2s; }
+        .cursor-pointer:hover { opacity: 0.8; }
+
         @media print {
             .print-hide { display: none !important; }
             body { background-color: #fff; }
@@ -103,7 +107,6 @@
                         <button class="btn btn-primary px-4" id="btnConsultar">Consultar</button>
                     </div>
 
-                    <!-- Opção para analisar CNAEs secundários -->
                     <div class="form-check form-switch mt-2">
                         <input class="form-check-input" type="checkbox" id="checkAnaliseSecundarios" checked>
                         <label class="form-check-label text-muted" for="checkAnaliseSecundarios" style="font-size: 0.9rem; cursor: pointer;">
@@ -111,27 +114,25 @@
                         </label>
                     </div>
 
-                    <!-- Mensagens de Erro/Aviso -->
                     <div id="alertContainer" class="mt-3"></div>
-                    <!-- Histórico -->
+                    
                     <div class="mt-3" id="historyContainer">
-                        <small class="text-muted d-block mb-2">Últimas consultas:</small>
-                        <div id="historyPills" class="d-flex flex-wrap gap-2"></div>
+                        <small class="text-muted d-block mb-2">Últimas consultas no Banco de Dados:</small>
+                        <div id="historyPills" class="d-flex flex-wrap gap-2">
+                            <small class="text-muted fst-italic" id="historyLoading">Carregando histórico...</small>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Indicador de Carregamento Individual -->
             <div id="loadingIndicator" class="text-center my-5 d-none print-hide">
-                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                    <span class="visually-hidden">Carregando...</span>
-                </div>
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
                 <p class="mt-2 text-muted">Buscando informações na base de dados...</p>
             </div>
 
             <!-- Resultados da Consulta Individual -->
             <div id="resultContainer" class="d-none">
-                <!-- Barra de Ações -->
                 <div class="d-flex flex-wrap gap-2 justify-content-end mb-3 print-hide">
                     <button class="btn btn-outline-secondary btn-sm" id="btnCopiar"><i class="fa-regular fa-copy"></i> Copiar Dados</button>
                     <button class="btn btn-outline-danger btn-sm" id="btnPDF"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
@@ -141,14 +142,12 @@
                 </div>
 
                 <div id="fichaEmpresa">
-                    <!-- Resumo Inteligente -->
                     <div class="alert alert-info shadow-sm mb-4" role="alert">
                         <h5 class="alert-heading"><i class="fa-solid fa-robot"></i> Resumo Inteligente</h5>
                         <p class="mb-0" id="resumoTexto"></p>
                     </div>
 
                     <div class="row g-4">
-                        <!-- Classificação (Ajustado para 3 colunas, sem analista) -->
                         <div class="col-12">
                             <div class="card shadow-sm border-primary h-100">
                                 <div class="card-header bg-primary text-white font-weight-bold">
@@ -173,7 +172,6 @@
                             </div>
                         </div>
 
-                        <!-- Dados Gerais -->
                         <div class="col-md-6">
                             <div class="card shadow-sm h-100">
                                 <div class="card-header bg-light"><i class="fa-solid fa-id-card"></i> Dados Gerais</div>
@@ -186,12 +184,10 @@
                                     <li class="list-group-item"><strong>Natureza Jurídica:</strong> <span id="valNatureza"></span></li>
                                     <li class="list-group-item"><strong>Porte:</strong> <span id="valPorte"></span></li>
                                     <li class="list-group-item"><strong>Capital Social:</strong> <span id="valCapital"></span></li>
-                                    <li class="list-group-item"><strong>Matriz/Filial:</strong> <span id="valMatriz"></span></li>
                                 </ul>
                             </div>
                         </div>
 
-                        <!-- Endereço e Contato -->
                         <div class="col-md-6">
                             <div class="card shadow-sm h-100">
                                 <div class="card-header bg-light"><i class="fa-solid fa-map-location-dot"></i> Endereço e Contato</div>
@@ -207,7 +203,6 @@
                             </div>
                         </div>
 
-                        <!-- CNAEs -->
                         <div class="col-12">
                             <div class="card shadow-sm">
                                 <div class="card-header bg-light"><i class="fa-solid fa-industry"></i> Atividades Econômicas (CNAE)</div>
@@ -277,19 +272,58 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- Scripts da Aplicação Unificados -->
     <script>
-        // Utils
+        // Restauração das Funções de Banco de Dados
+        const Database = {
+            async salvarConsulta(empresa, classificacao) {
+                if (!supabase) return;
+                try {
+                    const { error } = await supabase.from('consultas_historico').upsert({
+                        cnpj: Utils.cleanCNPJ(empresa.cnpj),
+                        razao_social: empresa.razao_social,
+                        porte: empresa.porte || 'N/A',
+                        perfil: classificacao.perfil,
+                        macro_setor: classificacao.macroSetor,
+                        carteira: classificacao.carteira
+                    }, { onConflict: 'cnpj' });
+
+                    if (!error) this.carregarHistorico();
+                } catch (err) {
+                    console.error("Erro ao salvar:", err);
+                }
+            },
+            async carregarHistorico() {
+                if (!supabase) {
+                    document.getElementById('historyLoading').textContent = "Supabase offline.";
+                    return;
+                }
+                try {
+                    const { data, error } = await supabase
+                        .from('consultas_historico')
+                        .select('cnpj, razao_social')
+                        .order('criado_em', { ascending: false })
+                        .limit(8);
+
+                    if (error) throw error;
+
+                    const container = document.getElementById('historyPills');
+                    if (data && data.length > 0) {
+                        container.innerHTML = data.map(d => 
+                            `<span class="badge bg-secondary cursor-pointer" onclick="document.getElementById('cnpjInput').value='${Utils.formatCNPJ(d.cnpj)}'; document.getElementById('btnConsultar').click()">${Utils.formatCNPJ(d.cnpj)}</span>`
+                        ).join('');
+                    } else {
+                        container.innerHTML = '<small class="text-muted">Nenhum histórico.</small>';
+                    }
+                } catch (err) {
+                    document.getElementById('historyLoading').textContent = "Erro ao carregar.";
+                }
+            }
+        };
+
         const Utils = {
             formatCNPJ(value) {
                 if (!value) return '';
-                return value
-                    .replace(/\D/g, '')
-                    .replace(/^(\d{2})(\d)/, '$1.$2')
-                    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-                    .replace(/\.(\d{3})(\d)/, '.$1/$2')
-                    .replace(/(\d{4})(\d)/, '$1-$2')
-                    .substr(0, 18);
+                return value.replace(/\D/g, '').replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2').substr(0, 18);
             },
             cleanCNPJ(value) {
                 if (!value) return '';
@@ -301,22 +335,12 @@
                 let tamanho = cnpj.length - 2;
                 let numeros = cnpj.substring(0, tamanho);
                 let digitos = cnpj.substring(tamanho);
-                let soma = 0;
-                let pos = tamanho - 7;
-                for (let i = tamanho; i >= 1; i--) {
-                    soma += numeros.charAt(tamanho - i) * pos--;
-                    if (pos < 2) pos = 9;
-                }
+                let soma = 0, pos = tamanho - 7;
+                for (let i = tamanho; i >= 1; i--) { soma += numeros.charAt(tamanho - i) * pos--; if (pos < 2) pos = 9; }
                 let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
                 if (resultado != digitos.charAt(0)) return false;
-                tamanho = tamanho + 1;
-                numeros = cnpj.substring(0, tamanho);
-                soma = 0;
-                pos = tamanho - 7;
-                for (let i = tamanho; i >= 1; i--) {
-                    soma += numeros.charAt(tamanho - i) * pos--;
-                    if (pos < 2) pos = 9;
-                }
+                tamanho = tamanho + 1; numeros = cnpj.substring(0, tamanho); soma = 0; pos = tamanho - 7;
+                for (let i = tamanho; i >= 1; i--) { soma += numeros.charAt(tamanho - i) * pos--; if (pos < 2) pos = 9; }
                 resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
                 if (resultado != digitos.charAt(1)) return false;
                 return true;
@@ -324,10 +348,7 @@
             formatDate(dateString) {
                 if (!dateString) return 'Não informada';
                 const parts = dateString.split('-');
-                if (parts.length === 3) {
-                    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-                }
-                return dateString;
+                return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateString;
             },
             formatCurrency(value) {
                 if (value === null || value === undefined) return 'Não informado';
@@ -335,28 +356,33 @@
             }
         };
 
-        // API
+        // API Inteligente: Tenta acesso direto, se bloquear por CORS, usa proxy rápido!
         const API = {
             async consultarCNPJ(cnpj) {
                 const cnpjLimpo = Utils.cleanCNPJ(cnpj);
-                const url = `https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`;
+                const urlDireta = `https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`;
+                
                 try {
-                    const response = await fetch(url);
+                    // 1. Tenta acesso ultra rápido
+                    const response = await fetch(urlDireta);
                     if (!response.ok) {
-                        if (response.status === 404) {
-                            throw new Error("CNPJ não encontrado na base de dados.");
-                        }
-                        throw new Error("Erro na comunicação com a API de consulta.");
+                        if (response.status === 404) throw new Error("CNPJ não encontrado.");
+                        throw new Error("Erro na API.");
                     }
-                    const data = await response.json();
-                    return data;
+                    return await response.json();
                 } catch (error) {
+                    // 2. Se a rede bloquear o Fetch (CORS), aciona o proxy alternativo (CorsProxy.io)
+                    if (error.message === "Failed to fetch" || error.name === "TypeError") {
+                        const urlProxy = `https://corsproxy.io/?${encodeURIComponent(urlDireta)}`;
+                        const responseProxy = await fetch(urlProxy);
+                        if (!responseProxy.ok) throw new Error("Erro ao buscar dados (Proxy).");
+                        return await responseProxy.json();
+                    }
                     throw error;
                 }
             }
         };
 
-        // Mapeamento de CNAEs (Sem nomes de analistas)
         const TabelaClassificacao = {
             "NAO_INDUSTRIAL": { carteira: "-", macroSetor: "CNAE não industrial e não relacionado" },
             "P_D": { carteira: "-", macroSetor: "Pesquisa e Desenvolvimento (P&D)" },
@@ -397,17 +423,12 @@
         };
 
         const CnaeDicionario = {
-            "1011201": "ALIMENTOS_BEBIDAS",
-            "2910701": "AUTOMOTIVO",
-            "4120400": "CONSTRUCAO_CIVIL",
-            "6204000": "TIC",
-            "1412601": "CADEIA_MODA"
+            "1011201": "ALIMENTOS_BEBIDAS", "2910701": "AUTOMOTIVO",
+            "4120400": "CONSTRUCAO_CIVIL", "6204000": "TIC", "1412601": "CADEIA_MODA"
         };
 
         const CnaeMapper = {
-            matchKeywords(descricao, palavras) {
-                return palavras.some(palavra => descricao.includes(palavra));
-            },
+            matchKeywords(descricao, palavras) { return palavras.some(p => descricao.includes(p)); },
             avaliarSetor(codigoCnae, descricaoCnae) {
                 const codigoLimpo = (codigoCnae || "").toString().replace(/\D/g, ''); 
                 const desc = (descricaoCnae || "").toLowerCase();
@@ -454,89 +475,58 @@
                 return TabelaClassificacao["DIVERSOS_OUTROS"];
             },
             classificar(codigoCnae, descricaoCnae, porte, cnaesSecundarios = [], analisarSecundarios = true) {
-                let classificacaoPrincipal = { ...this.avaliarSetor(codigoCnae, descricaoCnae) };
+                let classif = { ...this.avaliarSetor(codigoCnae, descricaoCnae) };
                 let todosCnaes = [{ codigo: codigoCnae, descricao: descricaoCnae }];
-                if (analisarSecundarios && Array.isArray(cnaesSecundarios) && cnaesSecundarios.length > 0) {
-                    todosCnaes = todosCnaes.concat(cnaesSecundarios);
-                }
-                const setoresNaoIndustriais = [
-                    "CNAE não industrial e não relacionado", 
-                    "Diversos (Serviços Complementares)", 
-                    "Diversos (Outros)"
-                ];
+                if (analisarSecundarios && Array.isArray(cnaesSecundarios)) todosCnaes = todosCnaes.concat(cnaesSecundarios);
+                
+                const setoresNaoIndustriais = ["CNAE não industrial e não relacionado", "Diversos (Serviços Complementares)", "Diversos (Outros)"];
                 let temIndustria = false;
                 for (let cnae of todosCnaes) {
-                    let analise = this.avaliarSetor(cnae.codigo, cnae.descricao);
-                    if (!setoresNaoIndustriais.includes(analise.macroSetor)) {
-                        temIndustria = true;
-                        break;
+                    if (!setoresNaoIndustriais.includes(this.avaliarSetor(cnae.codigo, cnae.descricao).macroSetor)) {
+                        temIndustria = true; break;
                     }
                 }
-                classificacaoPrincipal.perfil = temIndustria ? "Indústria" : "Comércio / Serviços";
-                return classificacaoPrincipal;
+                classif.perfil = temIndustria ? "Indústria" : "Comércio / Serviços";
+                return classif;
             }
         };
 
-        // Lógica Global
         let currentCompanyData = null;
         let batchResultsData = [];
 
         document.addEventListener("DOMContentLoaded", () => {
+            Database.carregarHistorico();
+
             const inputCnpj = document.getElementById('cnpjInput');
             const btnConsultar = document.getElementById('btnConsultar');
             const resultContainer = document.getElementById('resultContainer');
             const loadingIndicator = document.getElementById('loadingIndicator');
             const alertContainer = document.getElementById('alertContainer');
 
-            // Gerenciamento de Abas
-            const tabIndividual = document.getElementById('tabIndividual');
-            const tabLote = document.getElementById('tabLote');
-            const individualSection = document.getElementById('individualSection');
-            const batchSection = document.getElementById('batchSection');
-
-            tabIndividual.addEventListener('click', () => {
-                tabIndividual.className = 'btn btn-primary active py-2';
-                tabLote.className = 'btn btn-outline-primary py-2';
-                individualSection.classList.remove('d-none');
-                batchSection.classList.add('d-none');
-                if (currentCompanyData) resultContainer.classList.remove('d-none');
+            document.getElementById('tabIndividual').addEventListener('click', (e) => {
+                e.target.className = 'btn btn-primary active py-2';
+                document.getElementById('tabLote').className = 'btn btn-outline-primary py-2';
+                document.getElementById('individualSection').classList.remove('d-none');
+                document.getElementById('batchSection').classList.add('d-none');
             });
 
-            tabLote.addEventListener('click', () => {
-                tabLote.className = 'btn btn-primary active py-2';
-                tabIndividual.className = 'btn btn-outline-primary py-2';
-                batchSection.classList.remove('d-none');
-                individualSection.classList.add('d-none');
-                resultContainer.classList.add('d-none');
+            document.getElementById('tabLote').addEventListener('click', (e) => {
+                e.target.className = 'btn btn-primary active py-2';
+                document.getElementById('tabIndividual').className = 'btn btn-outline-primary py-2';
+                document.getElementById('batchSection').classList.remove('d-none');
+                document.getElementById('individualSection').classList.add('d-none');
             });
 
-            renderHistory();
-
-            inputCnpj.addEventListener('input', (e) => {
-                e.target.value = Utils.formatCNPJ(e.target.value);
-            });
-
-            inputCnpj.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') realizarConsulta();
-            });
-
-            inputCnpj.addEventListener('paste', () => {
-                setTimeout(() => {
-                    if (Utils.isValidCNPJ(inputCnpj.value)) {
-                        realizarConsulta();
-                    }
-                }, 100);
-            });
-
+            inputCnpj.addEventListener('input', e => e.target.value = Utils.formatCNPJ(e.target.value));
+            inputCnpj.addEventListener('keypress', e => { if (e.key === 'Enter') realizarConsulta(); });
             btnConsultar.addEventListener('click', realizarConsulta);
 
-            document.getElementById('btnLimpar').addEventListener('click', limparTela);
+            document.getElementById('btnLimpar').addEventListener('click', () => { inputCnpj.value = ''; resultContainer.classList.add('d-none'); });
             document.getElementById('btnCopiar').addEventListener('click', copiarDados);
             document.getElementById('btnImprimir').addEventListener('click', () => window.print());
             document.getElementById('btnPDF').addEventListener('click', exportarPDF);
             document.getElementById('btnExcel').addEventListener('click', exportarExcel);
 
-            // Processamento em Lote
             document.getElementById('btnProcessarLote').addEventListener('click', processarLoteCNPJs);
             document.getElementById('btnExportarLoteExcel').addEventListener('click', exportarLoteExcel);
 
@@ -545,7 +535,7 @@
                 alertContainer.innerHTML = '';
 
                 if (!Utils.isValidCNPJ(cnpj)) {
-                    showAlert('CNPJ inválido. Verifique os números informados.', 'warning');
+                    showAlert('CNPJ inválido.', 'warning');
                     return;
                 }
 
@@ -560,10 +550,16 @@
                     preencherDadosGerais(dados);
                     preencherEndereco(dados);
                     preencherCNAEs(dados);
-                    preencherClassificacao(dados);
-                    gerarResumoInteligente(dados);
                     
-                    saveToHistory(dados.cnpj, dados.razao_social);
+                    const classificacao = CnaeMapper.classificar(dados.cnae_fiscal, dados.cnae_fiscal_descricao, dados.porte, dados.cnaes_secundarios, document.getElementById('checkAnaliseSecundarios').checked);
+                    
+                    document.getElementById('valPerfil').textContent = classificacao.perfil;
+                    document.getElementById('valMacroSetor').textContent = classificacao.macroSetor;
+                    document.getElementById('valCarteira').textContent = classificacao.carteira;
+                    
+                    gerarResumoInteligente(dados, classificacao);
+                    
+                    Database.salvarConsulta(dados, classificacao);
 
                     loadingIndicator.classList.add('d-none');
                     resultContainer.classList.remove('d-none');
@@ -575,279 +571,102 @@
                 }
             }
 
-            function preencherDadosGerais(data) {
-                document.getElementById('valRazaoSocial').textContent = data.razao_social;
-                document.getElementById('valNomeFantasia').textContent = data.nome_fantasia || 'Não informado';
-                document.getElementById('valCnpj').textContent = Utils.formatCNPJ(data.cnpj);
-                document.getElementById('valSituacao').textContent = data.descricao_situacao_cadastral;
-                document.getElementById('valAbertura').textContent = Utils.formatDate(data.data_inicio_atividade);
-                document.getElementById('valNatureza').textContent = data.natureza_juridica;
-                document.getElementById('valPorte').textContent = data.porte || 'Não informado';
-                document.getElementById('valCapital').textContent = Utils.formatCurrency(data.capital_social);
-                document.getElementById('valMatriz').textContent = data.identificador_matriz_filial === 1 ? 'Matriz' : 'Filial';
+            function preencherDadosGerais(d) {
+                document.getElementById('valRazaoSocial').textContent = d.razao_social;
+                document.getElementById('valNomeFantasia').textContent = d.nome_fantasia || '-';
+                document.getElementById('valCnpj').textContent = Utils.formatCNPJ(d.cnpj);
+                document.getElementById('valSituacao').textContent = d.descricao_situacao_cadastral;
+                document.getElementById('valAbertura').textContent = Utils.formatDate(d.data_inicio_atividade);
+                document.getElementById('valNatureza').textContent = d.natureza_juridica;
+                document.getElementById('valPorte').textContent = d.porte || '-';
+                document.getElementById('valCapital').textContent = Utils.formatCurrency(d.capital_social);
             }
 
-            function preencherEndereco(data) {
-                document.getElementById('valLogradouro').textContent = `${data.logradouro || ''}`;
-                document.getElementById('valNumero').textContent = data.numero || 'S/N';
-                document.getElementById('valComplemento').textContent = data.complemento || '-';
-                document.getElementById('valBairro').textContent = data.bairro;
-                document.getElementById('valCidadeUf').textContent = `${data.municipio} / ${data.uf}`;
-                
-                let cepFormatado = data.cep ? data.cep.toString().replace(/^(\d{5})(\d{3})$/, "$1-$2") : '';
-                document.getElementById('valCep').textContent = cepFormatado;
-                
-                let tel = data.ddd_telefone_1 ? `(${data.ddd_telefone_1.substring(0,2)}) ${data.ddd_telefone_1.substring(2)}` : 'Não informado';
-                document.getElementById('valTelefone').textContent = tel;
-                document.getElementById('valEmail').textContent = data.email || 'Não informado';
+            function preencherEndereco(d) {
+                document.getElementById('valLogradouro').textContent = d.logradouro || '';
+                document.getElementById('valNumero').textContent = d.numero || 'S/N';
+                document.getElementById('valComplemento').textContent = d.complemento || '-';
+                document.getElementById('valBairro').textContent = d.bairro;
+                document.getElementById('valCidadeUf').textContent = `${d.municipio} / ${d.uf}`;
+                document.getElementById('valCep').textContent = d.cep ? d.cep.toString().replace(/^(\d{5})(\d{3})$/, "$1-$2") : '';
+                document.getElementById('valTelefone').textContent = d.ddd_telefone_1 ? `(${d.ddd_telefone_1.substring(0,2)}) ${d.ddd_telefone_1.substring(2)}` : '-';
+                document.getElementById('valEmail').textContent = d.email || '-';
             }
 
-            function preencherCNAEs(data) {
-                document.getElementById('valCnaePrincipal').textContent = `${data.cnae_fiscal} - ${data.cnae_fiscal_descricao}`;
-                const listSecundario = document.getElementById('listCnaeSecundario');
-                listSecundario.innerHTML = '';
-
-                if (data.cnaes_secundarios && data.cnaes_secundarios.length > 0) {
-                    data.cnaes_secundarios.forEach(cnae => {
-                        const li = document.createElement('li');
-                        li.className = 'list-group-item text-muted';
-                        li.style.fontSize = '0.85rem';
-                        li.textContent = `${cnae.codigo} - ${cnae.descricao}`;
-                        listSecundario.appendChild(li);
-                    });
-                } else {
-                    listSecundario.innerHTML = '<li class="list-group-item text-muted">Nenhuma atividade secundária registrada.</li>';
-                }
+            function preencherCNAEs(d) {
+                document.getElementById('valCnaePrincipal').textContent = `${d.cnae_fiscal} - ${d.cnae_fiscal_descricao}`;
+                const list = document.getElementById('listCnaeSecundario');
+                list.innerHTML = d.cnaes_secundarios && d.cnaes_secundarios.length > 0 ? 
+                    d.cnaes_secundarios.map(c => `<li class="list-group-item text-muted" style="font-size: 0.85rem;">${c.codigo} - ${c.descricao}</li>`).join('') : 
+                    '<li class="list-group-item text-muted">Nenhuma atividade secundária.</li>';
             }
 
-            function preencherClassificacao(data) {
-                const incluirSecundarios = document.getElementById('checkAnaliseSecundarios').checked;
-                const classificacao = CnaeMapper.classificar(
-                    data.cnae_fiscal.toString(), 
-                    data.cnae_fiscal_descricao, 
-                    data.porte, 
-                    data.cnaes_secundarios, 
-                    incluirSecundarios
-                );
-                document.getElementById('valPerfil').textContent = classificacao.perfil;
-                document.getElementById('valMacroSetor').textContent = classificacao.macroSetor;
-                document.getElementById('valCarteira').textContent = classificacao.carteira;
-            }
-
-            function gerarResumoInteligente(data) {
-                const porte = data.porte ? data.porte.toLowerCase() : 'indefinido';
-                const anoFundacao = data.data_inicio_atividade ? data.data_inicio_atividade.substring(0,4) : 'ano desconhecido';
-                const local = `${data.municipio}/${data.uf}`;
-                const atividade = data.cnae_fiscal_descricao ? data.cnae_fiscal_descricao.toLowerCase() : 'atividades diversas';
-                const incluirSecundarios = document.getElementById('checkAnaliseSecundarios').checked;
-                const classificacao = CnaeMapper.classificar(
-                    data.cnae_fiscal.toString(), 
-                    data.cnae_fiscal_descricao, 
-                    data.porte, 
-                    data.cnaes_secundarios, 
-                    incluirSecundarios
-                );
-                const setor = classificacao.macroSetor !== '-' ? classificacao.macroSetor : classificacao.carteira;
-                const perfilTexto = classificacao.perfil === "Indústria" ? "é uma Indústria que atua" : "é uma empresa de Comércio/Serviços que atua";
-                const resumo = `A empresa <strong>${data.razao_social}</strong> ${perfilTexto} no setor de <strong>${setor}</strong>, possui porte <strong>${porte}</strong>, foi fundada em <strong>${anoFundacao}</strong>, está localizada em <strong>${local}</strong> e possui como principal atividade a <strong>${atividade}</strong>.`;
-                document.getElementById('resumoTexto').innerHTML = resumo;
+            function gerarResumoInteligente(d, c) {
+                const porte = d.porte ? d.porte.toLowerCase() : 'indefinido';
+                const ano = d.data_inicio_atividade ? d.data_inicio_atividade.substring(0,4) : '-';
+                document.getElementById('resumoTexto').innerHTML = `A empresa <strong>${d.razao_social}</strong> é uma <strong>${c.perfil}</strong> no setor de <strong>${c.macroSetor}</strong>, possui porte <strong>${porte}</strong>, fundada em <strong>${ano}</strong> em <strong>${d.municipio}/${d.uf}</strong>.`;
             }
 
             async function processarLoteCNPJs() {
                 const rawText = document.getElementById('batchInput').value;
                 const progressSpan = document.getElementById('batchProgress');
-                const btnProcessar = document.getElementById('btnProcessarLote');
-                const btnExcelLote = document.getElementById('btnExportarLoteExcel');
-                const resultTableContainer = document.getElementById('batchResultContainer');
                 const tbody = document.querySelector('#batchTable tbody');
+                let cnpjs = [...new Set(rawText.split(/[\n,;]+/).map(Utils.cleanCNPJ).filter(c => c.length > 0))];
+                
+                if (cnpjs.length === 0) return alert('Insira pelo menos um CNPJ.');
 
-                const lines = rawText.split(/[\n,;]+/);
-                let cnpjs = [];
-                lines.forEach(l => {
-                    let cleaned = Utils.cleanCNPJ(l);
-                    if (cleaned.length > 0) cnpjs.push(cleaned);
-                });
-
-                cnpjs = [...new Set(cnpjs)]; // Remove duplicados
-
-                if (cnpjs.length === 0) {
-                    alert('Insira pelo menos um CNPJ para processar o lote.');
-                    return;
-                }
-
-                btnProcessar.disabled = true;
-                btnExcelLote.classList.add('d-none');
+                document.getElementById('btnProcessarLote').disabled = true;
+                document.getElementById('btnExportarLoteExcel').classList.add('d-none');
                 batchResultsData = [];
                 tbody.innerHTML = '';
-                resultTableContainer.classList.remove('d-none');
+                document.getElementById('batchResultContainer').classList.remove('d-none');
 
-                const incluirSecundarios = document.getElementById('checkAnaliseSecundarios').checked;
-                let count = 0;
-
-                for (let rawCnpj of cnpjs) {
-                    count++;
-                    progressSpan.textContent = `Processando ${count} de ${cnpjs.length}...`;
-                    let formatted = Utils.formatCNPJ(rawCnpj);
-
+                for (let i = 0; i < cnpjs.length; i++) {
+                    progressSpan.textContent = `Processando ${i+1} de ${cnpjs.length}...`;
+                    let raw = cnpjs[i];
+                    let formatted = Utils.formatCNPJ(raw);
                     let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${formatted}</td>
-                        <td colspan="5" class="text-muted">Buscando dados...</td>
-                        <td><span class="badge bg-warning text-dark">Aguardando</span></td>
-                    `;
+                    
+                    if (!Utils.isValidCNPJ(raw)) {
+                        tr.innerHTML = `<td>${formatted}</td><td colspan="5" class="text-danger">CNPJ Inválido</td><td><span class="badge bg-danger">Inválido</span></td>`;
+                    } else {
+                        try {
+                            await new Promise(r => setTimeout(r, 400)); // Delay para não travar API
+                            const d = await API.consultarCNPJ(raw);
+                            const c = CnaeMapper.classificar(d.cnae_fiscal, d.cnae_fiscal_descricao, d.porte, d.cnaes_secundarios, document.getElementById('checkAnaliseSecundarios').checked);
+                            tr.innerHTML = `<td>${formatted}</td><td>${d.razao_social||'-'}</td><td>${d.porte||'-'}</td><td><span class="badge bg-primary">${c.perfil}</span></td><td>${c.macroSetor}</td><td>${c.carteira}</td><td><span class="badge bg-success">Sucesso</span></td>`;
+                            
+                            batchResultsData.push({ CNPJ: formatted, Razao_Social: d.razao_social, Porte: d.porte, Perfil: c.perfil, Macro_Setor: c.macroSetor });
+                            Database.salvarConsulta(d, c);
+                        } catch (err) {
+                            tr.innerHTML = `<td>${formatted}</td><td colspan="5" class="text-danger">${err.message}</td><td><span class="badge bg-danger">Erro</span></td>`;
+                        }
+                    }
                     tbody.appendChild(tr);
-
-                    if (!Utils.isValidCNPJ(rawCnpj)) {
-                        tr.children[1].outerHTML = `<td colspan="5" class="text-danger">CNPJ Inválido estruturalmente</td>`;
-                        tr.children[6].innerHTML = `<span class="badge bg-danger">Inválido</span>`;
-                        batchResultsData.push({ CNPJ: formatted, Razao_Social: 'CNPJ Inválido', Status: 'Inválido' });
-                        continue;
-                    }
-
-                    try {
-                        // Delay amigável para evitar rate-limit na API pública
-                        await new Promise(r => setTimeout(r, 350));
-                        const dados = await API.consultarCNPJ(rawCnpj);
-                        
-                        const classificacao = CnaeMapper.classificar(
-                            dados.cnae_fiscal.toString(), 
-                            dados.cnae_fiscal_descricao, 
-                            dados.porte, 
-                            dados.cnaes_secundarios, 
-                            incluirSecundarios
-                        );
-
-                        tr.innerHTML = `
-                            <td>${formatted}</td>
-                            <td>${dados.razao_social || '-'}</td>
-                            <td>${dados.porte || 'Não informado'}</td>
-                            <td><span class="badge bg-primary">${classificacao.perfil}</span></td>
-                            <td>${classificacao.macroSetor}</td>
-                            <td>${classificacao.carteira}</td>
-                            <td><span class="badge bg-success">Sucesso</span></td>
-                        `;
-
-                        batchResultsData.push({
-                            CNPJ: formatted,
-                            Razao_Social: dados.razao_social || '',
-                            Nome_Fantasia: dados.nome_fantasia || '',
-                            Situacao: dados.descricao_situacao_cadastral || '',
-                            Porte: dados.porte || '',
-                            Perfil: classificacao.perfil,
-                            Macro_Setor: classificacao.macroSetor,
-                            Carteira: classificacao.carteira,
-                            CNAE_Principal: `${dados.cnae_fiscal} - ${dados.cnae_fiscal_descricao}`,
-                            Municipio_UF: `${dados.municipio}/${dados.uf}`,
-                            Status: 'Sucesso'
-                        });
-
-                    } catch (err) {
-                        tr.children[1].outerHTML = `<td colspan="5" class="text-danger">${err.message}</td>`;
-                        tr.children[6].innerHTML = `<span class="badge bg-danger">Erro API</span>`;
-                        batchResultsData.push({ CNPJ: formatted, Razao_Social: 'Erro na consulta', Status: err.message });
-                    }
                 }
-
-                progressSpan.textContent = `Lote processado com sucesso! (${cnpjs.length} consultados)`;
-                btnProcessar.disabled = false;
-                if (batchResultsData.length > 0) {
-                    btnExcelLote.classList.remove('d-none');
-                }
+                progressSpan.textContent = `Concluído!`;
+                document.getElementById('btnProcessarLote').disabled = false;
+                if(batchResultsData.length > 0) document.getElementById('btnExportarLoteExcel').classList.remove('d-none');
             }
 
             function exportarLoteExcel() {
-                if (batchResultsData.length === 0) return;
                 const ws = XLSX.utils.json_to_sheet(batchResultsData);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Consulta_Lote");
-                XLSX.writeFile(wb, `Relatorio_Lote_Empresas.xlsx`);
+                XLSX.utils.book_append_sheet(wb, ws, "Lote");
+                XLSX.writeFile(wb, `Lote_Empresas.xlsx`);
             }
 
             function showAlert(msg, type) {
-                let icon = type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-xmark';
-                alertContainer.innerHTML = `<div class="alert alert-${type === 'warning' ? 'warning' : 'danger'} d-flex align-items-center gap-2" role="alert">
-                    <i class="fa-solid ${icon} fa-lg"></i>
-                    <div>${msg}</div>
-                </div>`;
-            }
-
-            function limparTela() {
-                inputCnpj.value = '';
-                resultContainer.classList.add('d-none');
-                alertContainer.innerHTML = '';
-                currentCompanyData = null;
-                inputCnpj.focus();
-            }
-
-            function saveToHistory(cnpj, razao) {
-                let history = JSON.parse(localStorage.getItem('cnpjHistory')) || [];
-                history = history.filter(item => item.cnpj !== Utils.formatCNPJ(cnpj));
-                history.unshift({ cnpj: Utils.formatCNPJ(cnpj), razao: (razao || '').substring(0, 25) + '...' });
-                if (history.length > 5) history.pop();
-                localStorage.setItem('cnpjHistory', JSON.stringify(history));
-                renderHistory();
-            }
-
-            function renderHistory() {
-                const container = document.getElementById('historyPills');
-                let history = JSON.parse(localStorage.getItem('cnpjHistory')) || [];
-                
-                if (history.length === 0) {
-                    container.innerHTML = '<small class="text-muted">Nenhum histórico recente.</small>';
-                    return;
-                }
-
-                container.innerHTML = '';
-                history.forEach(item => {
-                    const badge = document.createElement('span');
-                    badge.className = 'badge bg-secondary me-2 p-2 mb-1';
-                    badge.style.cursor = 'pointer';
-                    badge.textContent = item.cnpj;
-                    badge.title = item.razao;
-                    badge.onclick = () => {
-                        inputCnpj.value = item.cnpj;
-                        realizarConsulta();
-                    };
-                    container.appendChild(badge);
-                });
+                alertContainer.innerHTML = `<div class="alert alert-${type === 'warning' ? 'warning' : 'danger'}"><i class="fa-solid fa-circle-exclamation"></i> ${msg}</div>`;
             }
 
             function copiarDados() {
-                if (!currentCompanyData) return;
-                const texto = `CNPJ: ${Utils.formatCNPJ(currentCompanyData.cnpj)}\nRazão Social: ${currentCompanyData.razao_social}\nSituação: ${currentCompanyData.descricao_situacao_cadastral}\nEndereço: ${currentCompanyData.logradouro}, ${currentCompanyData.numero} - ${currentCompanyData.bairro}, ${currentCompanyData.municipio}/${currentCompanyData.uf}\nAtividade Principal: ${currentCompanyData.cnae_fiscal_descricao}`;
-                navigator.clipboard.writeText(texto).then(() => {
-                    alert('Dados copiados para a área de transferência!');
-                });
+                if(!currentCompanyData) return;
+                navigator.clipboard.writeText(`CNPJ: ${Utils.formatCNPJ(currentCompanyData.cnpj)}\nRazão: ${currentCompanyData.razao_social}`).then(() => alert('Copiado!'));
             }
-
-            function exportarPDF() {
-                const element = document.getElementById('fichaEmpresa');
-                const opt = {
-                    margin: 0.5,
-                    filename: `Ficha_${currentCompanyData.cnpj}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-                };
-                html2pdf().set(opt).from(element).save();
-            }
-
+            function exportarPDF() { html2pdf().set({ margin: 0.5, filename: `Ficha_${currentCompanyData.cnpj}.pdf` }).from(document.getElementById('fichaEmpresa')).save(); }
             function exportarExcel() {
-                if (!currentCompanyData) return;
-                const flatData = [{
-                    CNPJ: Utils.formatCNPJ(currentCompanyData.cnpj),
-                    Razao_Social: currentCompanyData.razao_social,
-                    Nome_Fantasia: currentCompanyData.nome_fantasia,
-                    Situacao: currentCompanyData.descricao_situacao_cadastral,
-                    Data_Abertura: Utils.formatDate(currentCompanyData.data_inicio_atividade),
-                    Natureza: currentCompanyData.natureza_juridica,
-                    Porte: currentCompanyData.porte,
-                    CNAE_Principal: `${currentCompanyData.cnae_fiscal} - ${currentCompanyData.cnae_fiscal_descricao}`,
-                    Endereco: `${currentCompanyData.logradouro}, ${currentCompanyData.numero} - ${currentCompanyData.municipio}/${currentCompanyData.uf}`,
-                    Telefone: currentCompanyData.ddd_telefone_1,
-                    Email: currentCompanyData.email
-                }];
-                const ws = XLSX.utils.json_to_sheet(flatData);
+                const ws = XLSX.utils.json_to_sheet([{CNPJ: Utils.formatCNPJ(currentCompanyData.cnpj), Razao: currentCompanyData.razao_social}]);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Empresa");
                 XLSX.writeFile(wb, `Dados_${currentCompanyData.cnpj}.xlsx`);
