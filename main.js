@@ -9,20 +9,18 @@ import { UI } from './ui.js';
 
 let supabaseClient = null;
 if (window.supabase) {
-    supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    try {
+        supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    } catch (e) {
+        console.error("Erro ao inicializar Supabase:", e);
+    }
 }
 
 let currentCompanyData = null;
 let batchResultsData = [];
 
-document.addEventListener("DOMContentLoaded", async () => {
-    // Carregar histórico inicial
-    const historico = await HistoryRepository.carregar(supabaseClient);
-    UI.renderHistory(historico, (cnpjSelecionado) => {
-        document.getElementById('cnpjInput').value = Utils.formatCNPJ(cnpjSelecionado);
-        realizarConsulta();
-    });
-
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. ATIVA A INTERFACE IMEDIATAMENTE (Nenhum bloqueio de rede atrasa os botões)
     const inputCnpj = document.getElementById('cnpjInput');
     const btnConsultar = document.getElementById('btnConsultar');
 
@@ -147,12 +145,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             const analise = IndustrialService.analisar(empresa, analisarSecundarias);
 
             UI.renderFicha(empresa, analise);
-            await HistoryRepository.salvar(supabaseClient, empresa, analise);
             
-            const novoHistorico = await HistoryRepository.carregar(supabaseClient);
-            UI.renderHistory(novoHistorico, (cnpjSel) => {
-                inputCnpj.value = Utils.formatCNPJ(cnpjSel);
-                realizarConsulta();
+            // Salva e atualiza histórico em background (não trava a UI)
+            HistoryRepository.salvar(supabaseClient, empresa, analise).then(() => {
+                HistoryRepository.carregar(supabaseClient).then(novoHistorico => {
+                    UI.renderHistory(novoHistorico, (cnpjSel) => {
+                        inputCnpj.value = Utils.formatCNPJ(cnpjSel);
+                        realizarConsulta();
+                    });
+                });
             });
 
             UI.toggleLoading(false);
@@ -161,5 +162,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             UI.toggleLoading(false);
             UI.showAlert(error.message, 'danger');
         }
+    }
+
+    // 2. CARREGA O HISTÓRICO EM SEGUNDO PLANO (Não bloqueia o carregamento da página)
+    if (supabaseClient) {
+        HistoryRepository.carregar(supabaseClient).then(historico => {
+            UI.renderHistory(historico, (cnpjSelecionado) => {
+                document.getElementById('cnpjInput').value = Utils.formatCNPJ(cnpjSelecionado);
+                realizarConsulta();
+            });
+        }).catch(err => {
+            console.warn("Não foi possível carregar o histórico:", err);
+            document.getElementById('historyPills').innerHTML = '<small class="text-muted">Histórico indisponível temporariamente.</small>';
+        });
+    } else {
+        document.getElementById('historyPills').innerHTML = '<small class="text-muted">Supabase não configurado.</small>';
     }
 });
