@@ -336,10 +336,12 @@
         };
 
         // API
+       // API Corrigida
         const API = {
             async consultarCNPJ(cnpj) {
                 const cnpjLimpo = Utils.cleanCNPJ(cnpj);
-                const url = `https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`;
+                const url = `https://publica.cnpj.ws/cnpj/${cnpjLimpo}`;
+
                 try {
                     const response = await fetch(url);
                     if (!response.ok) {
@@ -348,14 +350,41 @@
                         }
                         throw new Error("Erro na comunicação com a API de consulta.");
                     }
-                    const data = await response.json();
+                    const resJson = await response.json();
+                    
+                    const data = {
+                        cnpj: resJson.cnpj_raiz || cnpjLimpo,
+                        razao_social: resJson.razao_social,
+                        nome_fantasia: resJson.estabelecimento?.nome_fantasia,
+                        descricao_situacao_cadastral: resJson.estabelecimento?.situacao_cadastral,
+                        data_inicio_atividade: resJson.estabelecimento?.data_inicio_atividade,
+                        natureza_juridica: resJson.natureza_juridica?.descricao,
+                        porte: resJson.porte?.descricao,
+                        capital_social: resJson.capital_social,
+                        identificador_matriz_filial: resJson.estabelecimento?.tipo === 'MATRIZ' ? 1 : 2,
+                        logradouro: (resJson.estabelecimento?.tipo_logradouro || '') + ' ' + (resJson.estabelecimento?.logradouro || ''),
+                        numero: resJson.estabelecimento?.numero,
+                        complemento: resJson.estabelecimento?.complemento,
+                        bairro: resJson.estabelecimento?.bairro,
+                        municipio: resJson.estabelecimento?.cidade?.nome,
+                        uf: resJson.estabelecimento?.estado?.sigla,
+                        cep: resJson.estabelecimento?.cep,
+                        ddd_telefone_1: (resJson.estabelecimento?.ddd1 || '') + (resJson.estabelecimento?.telefone1 || ''),
+                        email: resJson.estabelecimento?.email,
+                        cnae_fiscal: resJson.estabelecimento?.atividade_principal?.id,
+                        cnae_fiscal_descricao: resJson.estabelecimento?.atividade_principal?.descricao,
+                        cnaes_secundarios: (resJson.estabelecimento?.atividades_secundarias || []).map(a => ({
+                            codigo: a.id,
+                            descricao: a.descricao
+                        }))
+                    };
+
                     return data;
                 } catch (error) {
                     throw error;
                 }
             }
         };
-
         // Mapeamento de CNAEs (Sem nomes de analistas)
         const TabelaClassificacao = {
             "NAO_INDUSTRIAL": { carteira: "-", macroSetor: "CNAE não industrial e não relacionado" },
