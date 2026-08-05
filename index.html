@@ -50,7 +50,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm print-hide">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <i class="fa-solid fa-building mx-2"></i> Inteligência Corporativa | Sistema Avançado de Classificação CNAE
+                <i class="fa-solid fa-building mx-2"></i> Inteligência Corporativa | Classificação Setorial de Empresas
             </a>
         </div>
     </nav>
@@ -84,7 +84,7 @@
                     <div class="form-check form-switch mt-2">
                         <input class="form-check-input" type="checkbox" id="checkAnaliseSecundarios" checked>
                         <label class="form-check-label text-muted" for="checkAnaliseSecundarios" style="font-size: 0.9rem; cursor: pointer;">
-                            <i class="fa-solid fa-gears text-primary"></i> Analisar conjunto completo (Principal e todas as Secundárias) para rigor absoluto
+                            <i class="fa-solid fa-gears text-primary"></i> Analisar conjunto completo (Principal e todas as Secundárias)
                         </label>
                     </div>
 
@@ -102,7 +102,7 @@
             <!-- Indicador de Carregamento -->
             <div id="loadingIndicator" class="text-center my-5 d-none print-hide">
                 <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-                <p class="mt-2 text-muted">Analisando atividades econômicas e cruzando bases oficiais...</p>
+                <p class="mt-2 text-muted">Analisando atividades econômicas e cruzando bases de referência...</p>
             </div>
 
             <!-- Resultados da Consulta Individual -->
@@ -116,10 +116,10 @@
                 </div>
 
                 <div id="fichaEmpresa">
-                    <!-- Resumo Inteligente / Card Executivo Completo -->
+                    <!-- Resumo Executivo / Ficha da Empresa -->
                     <div class="card shadow-sm border-primary mb-4">
                         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0"><i class="fa-solid fa-robot me-2"></i> Resumo Executivo & Análise Estrutural CNAE</h5>
+                            <h5 class="mb-0"><i class="fa-solid fa-building me-2"></i> Ficha Cadastral e Setorial da Empresa</h5>
                             <span id="badgeIndustrialHeader" class="badge fs-6 px-3 py-2"></span>
                         </div>
                         <div class="card-body">
@@ -135,12 +135,11 @@
                                         <li class="list-group-item d-flex justify-content-between"><strong>CNPJ:</strong> <span id="valCnpj" class="text-end font-monospace"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Porte:</strong> <span id="valPorte" class="text-end"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Perfil Definido:</strong> <span id="valPerfil" class="text-end fw-bold text-primary"></span></li>
-                                        <li class="list-group-item d-flex justify-content-between"><strong>Macro Setor / Carteira:</strong> <span id="valMacroSetor" class="text-end fw-bold"></span></li>
                                     </ul>
                                 </div>
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush small">
-                                        <li class="list-group-item d-flex justify-content-between"><strong>Localização:</strong> <span id="valLocalizacao" class="text-end"></span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><strong>Município / Estado:</strong> <span id="valLocalizacao" class="text-end"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Situação Cadastral:</strong> <span id="valSituacao" class="text-end"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Data de Abertura:</strong> <span id="valAbertura" class="text-end"></span></li>
                                         <li class="list-group-item d-flex justify-content-between"><strong>Natureza Jurídica:</strong> <span id="valNatureza" class="text-end"></span></li>
@@ -149,9 +148,9 @@
                                 </div>
                             </div>
 
-                            <!-- Caixa de Detalhamento da Decisão Industrial -->
+                            <!-- Caixa de Detalhamento da Análise Industrial -->
                             <div class="mt-4 p-3 rounded bg-light border" id="boxMotivacaoIndustrial">
-                                <h6 class="fw-bold mb-2"><i class="fa-solid fa-clipboard-check me-2 text-success"></i> Auditoria de Enquadramento Industrial (IBGE/CONCLA):</h6>
+                                <h6 class="fw-bold mb-2"><i class="fa-solid fa-clipboard-check me-2 text-success"></i> Resultado da Análise de Enquadramento Industrial:</h6>
                                 <p class="mb-0 text-muted small" id="textoMotivacaoIndustrial"></p>
                             </div>
                         </div>
@@ -174,8 +173,7 @@
                                                     <th>Código</th>
                                                     <th>Descrição da Atividade</th>
                                                     <th>Tipo</th>
-                                                    <th>Classificação Setorial</th>
-                                                    <th>Enquadramento Industrial</th>
+                                                    <th>Classificação na Base</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="listCnaeSecundarioTable">
@@ -196,7 +194,7 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i> Processamento de Lista em Lote</h5>
-                    <p class="text-muted small">Cole abaixo múltiplos CNPJs (um por linha, separados por vírgula ou ponto e vírgula). O sistema analisará o conjunto integral de CNAEs de cada empresa automaticamente:</p>
+                    <p class="text-muted small">Cole abaixo múltiplos CNPJs (um por linha, separados por vírgula ou ponto e vírgula). O sistema analisará o conjunto integral de CNAEs de cada empresa com base nos registros oficiais:</p>
                     <div class="mb-3">
                         <textarea id="batchInput" class="form-control font-monospace" rows="6" placeholder="00000000000100&#10;11.111.111/0001-11"></textarea>
                     </div>
@@ -214,7 +212,7 @@
 
             <!-- Tabela de Resultados do Lote -->
             <div id="batchResultContainer" class="card shadow-sm d-none mb-4">
-                <div class="card-header bg-dark text-white"><i class="fa-solid fa-table me-2"></i> Resultados Consolidados da Análise Setorial & Industrial</div>
+                <div class="card-header bg-dark text-white"><i class="fa-solid fa-table me-2"></i> Resultados Consolidados da Análise Industrial</div>
                 <div class="card-body p-0">
                     <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
                         <table class="table table-striped table-hover align-middle small mb-0" id="batchTable">
@@ -223,10 +221,10 @@
                                     <th>CNPJ</th>
                                     <th>Razão Social</th>
                                     <th>Porte</th>
-                                    <th>Perfil Definido</th>
-                                    <th>Macro Setor</th>
+                                    <th>Perfil</th>
+                                    <th>Município/UF</th>
                                     <th>Possui CNAE Industrial?</th>
-                                    <th>Motivação / CNAE Industrial</th>
+                                    <th>CNAEs Industriais Identificadas</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -244,7 +242,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- Núcleo de Engenharia de Dados & Lógica Sênior -->
+    <!-- Núcleo de Engenharia de Dados & Lógica Setorial -->
     <script>
         // =========================================================================
         // MÓDULO DE PERSISTÊNCIA & SUPABASE
@@ -298,7 +296,7 @@
         };
 
         // =========================================================================
-        // UTILITÁRIOS DE DADOS & VALIDAÇÃO
+        // UTILITÁRIOS DE DADOS & NORMALIZAÇÃO DE CNAE
         // =========================================================================
         const Utils = {
             formatCNPJ(value) {
@@ -333,6 +331,11 @@
             formatCurrency(value) {
                 if (value === null || value === undefined) return 'Não informado';
                 return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+            },
+            // Normalização estrita exigida: remove formatação, espaços e caracteres não numéricos
+            normalizeCnae(code) {
+                if (!code) return '';
+                return code.toString().replace(/\D/g, '');
             }
         };
 
@@ -359,7 +362,6 @@
                     if (error.message === "INSTABILIDADE_RECEITA") throw new Error("Base da Receita Federal temporariamente instável.");
                     if (error.message.startsWith("ERRO_API_")) throw new Error("Erro na comunicação com a API oficial.");
 
-                    // Fallback para Proxies caso ocorra bloqueio de rede local
                     try {
                         const resProxy1 = await fetch(`https://api.codetabs.com/v1/proxy?quest=${urlDireta}`);
                         if (!resProxy1.ok) throw new Error();
@@ -378,115 +380,122 @@
         };
 
         // =========================================================================
-        // MOTOR DE ANÁLISE CNAE & CLASSIFICAÇÃO INDUSTRIAL SÊNIOR (IBGE/CONCLA)
+        // BASE DE ABRANGÊNCIA INDUSTRIAL & MOTOR DE CLASSIFICAÇÃO
         // =========================================================================
+        // Contém os códigos CNAE (normalizados) de referência para classificação industrial
+        const BaseAbrangenciaIndustrial = new Set([
+            // Indústria de Transformação e Extrativa (amostra abrangente de referência industrial)
+            "0111301","0111302","0111303","0112101","0112102","0113000","0114800","0115600","0116401","0116402","0119999",
+            "0500101","0500102","0600001","0600002","0710301","0710302","0721901","0721902","0729401","0729402","0729403",
+            "0810001","0810002","0810003","0810099","0891600","0892401","0892402","0893200","0899199","0910601","0910602",
+            "1011201","1011202","1011203","1011204","1011205","1012101","1012102","1012103","1013901","1013902","1020101",
+            "1020102","1031700","1032501","1032599","1033301","1033302","1041401","1041402","1041403","1042200","1043100",
+            "1051100","1052000","1053800","1061901","1061902","1062700","1063500","1064300","1065101","1065102","1066000",
+            "1069400","1071600","1072401","1072402","1081301","1081302","1082100","1091101","1091102","1092900","1093701",
+            "1093702","1094500","1095300","1096100","1099601","1099602","1099699","1111901","1111902","1112700","1113501",
+            "1113502","1121600","1122401","1122402","1122499","1210600","1220401","1220402","1220403","1311100","1312000",
+            "1313800","1314600","1321600","1322500","1323400","1330800","1340501","1340502","1340599","1351100","1359600",
+            "1411801","1411802","1412601","1412602","1412603","1413401","1413402","1413403","1414200","1421500","1422300",
+            "1510600","1521100","1529700","1610201","1610202","1621800","1622601","1622602","1623400","1629301","1629302",
+            "1710901","1710902","1710903","1721400","1722200","1731100","1732000","1741901","1741902","1742799","1749400",
+            "1811301","1811302","1812100","1813099","1821100","1822999","1910100","1921700","1922501","1922502","1922599",
+            "1931400","1932200","2011100","2012600","2013401","2013402","2014200","2019399","2021500","2029100","2031200",
+            "2032100","2033900","2040100","2051700","2052500","2061400","2062200","2063100","2091600","2092401","2092402",
+            "2092403","2093200","2099199","2110600","2121101","2121102","2121103","2122000","2123800","2211100","2212900",
+            "2219600","2221800","2222600","2223400","2229301","2229302","2229303","2229399","2311700","2312500","2319200",
+            "2320600","2330301","2330302","2330303","2330399","2341900","2342701","2342702","2349401","2349499","2391501",
+            "2391502","2391503","2392300","2399101","2399199","2411300","2421100","2422901","2422902","2423501","2423502",
+            "2424000","2431800","2439300","2441501","2441502","2442300","2443100","2449101","2449102","2449103","2451200",
+            "2452100","2511000","2512800","2513600","2521700","2522800","2531401","2531402","2532201","2532202","2539001",
+            "2539002","2541100","2542000","2543800","2550101","2550102","2591800","2592601","2592602","2593400","2599301",
+            "2599302","2599399","2610800","2621300","2622100","2631100","2632900","2640000","2651500","2652300","2660400",
+            "2670101","2670102","2680900","2710401","2710402","2721000","2722801","2722802","2731700","2732500","2733300",
+            "2740601","2740602","2751100","2759701","2759799","2790201","2790202","2790299","2811900","2812700","2813500",
+            "2814301","2814302","2815101","2815102","2821601","2821602","2822401","2822402","2823200","2824101","2824102",
+            "2825901","2825902","2829101","2829199","2831300","2832100","2833000","2840200","2851800","2852600","2861500",
+            "2862300","2863100","2864000","2865800","2866900","2869100","2910701","2910702","2910703","2920401","2920402",
+            "2930101","2930102","2930103","2949200","2950600","3011301","3011302","3012100","3031800","3032600","3041500",
+            "3050400","3091101","3091102","3092000","3099700","3101201","3101202","3102100","3103900","3104700","3109000",
+            "3211601","3211602","3212400","3220500","3230200","3240001","3240002","3240003","3240099","3250701","3250702",
+            "3250703","3250704","3250705","3250706","3250709","3291400","3292201","3292202","3299001","3299002","3299003",
+            "3299004","3299005","3299099","3311200","3312102","3312103","3312104","3313901","3313902","3313999","3314701",
+            "3314702","3314709","3315500","3316301","3316302","3317101","3317102","3319801","3319802","3321000","3329501",
+            "3329599"
+        ]);
+
         const CnaeAnalyzer = {
-            tabelaSetores: {
-                "TIC": { carteira: "TIC", macroSetor: "Tecnologia da Informação e Comunicação" },
-                "AUTOMOTIVO": { carteira: "Automotivo", macroSetor: "Indústria de Transportes e Veículos" },
-                "CADEIA_MODA": { carteira: "Cadeia da Moda", macroSetor: "Têxtil, Vestuário e Calçados" },
-                "ALIMENTOS_BEBIDAS": { carteira: "Alimentos e Bebidas", macroSetor: "Alimentos, Bebidas e Fumo" },
-                "CONSTRUCAO_CIVIL": { carteira: "Construção Civil", macroSetor: "Construção Pesada e Civil" },
-                "METAL_MECANICO": { carteira: "Metal Mecânico", macroSetor: "Metalurgia, Máquinas e Equipamentos" },
-                "QUIMICO": { carteira: "Químico / Farmacêutico", macroSetor: "Produtos Químicos e Farmacêuticos" },
-                "PAPEL_CELULOSE": { carteira: "Papel e Celulose", macroSetor: "Papel, Papelão e Gráfica" },
-                "EXTRATIVISTA": { carteira: "Extrativista", macroSetor: "Indústrias Extrativas" },
-                "SERVICOS": { carteira: "Serviços Diversos", macroSetor: "Serviços Especializados" },
-                "COMERCIO": { carteira: "Comércio Geral", macroSetor: "Comércio Atacadista e Varejista" },
-                "OUTROS": { carteira: "Diversos", macroSetor: "Diversos / Outros" }
-            },
-
-            matchKeywords(desc, palavras) {
-                return palavras.some(p => desc.includes(p));
-            },
-
-            // Classifica individualmente uma CNAE
-            avaliarItemCnae(codigo, descricao, tipo) {
-                const codigoLimpo = (codigo || "").toString().replace(/\D/g, '');
-                const prefixo2 = parseInt(codigoLimpo.substring(0, 2), 10) || 0;
-                const desc = (descricao || "").toLowerCase();
-
-                // 1. Verificação oficial IBGE/CONCLA para Indústria:
-                // Se o código de divisão CNAE está entre 05 e 33 (inclusive), trata-se de Indústria Extrativa (05 a 09) ou Indústria de Transformação (10 a 33).
-                const isDivisaoIndustrialIBGE = (prefixo2 >= 5 && prefixo2 <= 33);
-
-                // 2. Identificação de Macro Setor e Categoria baseada em palavras-chave e divisões
-                let setor = this.tabelaSetores["OUTROS"];
-                if (prefixo2 >= 45 && prefixo2 <= 47) setor = this.tabelaSetores["COMERCIO"];
-                else if (prefixo2 >= 49 && prefixo2 <= 53) setor = this.tabelaSetores["SERVICOS"];
-                else if (this.matchKeywords(desc, ["software", "tecnologia", "informática", "dados", "internet", "telecomunica"])) setor = this.tabelaSetores["TIC"];
-                else if (this.matchKeywords(desc, ["automóve", "veículo", "carro", "moto", "caminhão", "autopeças"])) setor = this.tabelaSetores["AUTOMOTIVO"];
-                else if (this.matchKeywords(desc, ["vestuário", "roupa", "calçado", "têxtil", "tecido", "moda", "malha"])) setor = this.tabelaSetores["CADEIA_MODA"];
-                else if (this.matchKeywords(desc, ["alimento", "bebida", "carne", "laticínio", "panificação", "pão", "açúcar"])) setor = this.tabelaSetores["ALIMENTOS_BEBIDAS"];
-                else if (this.matchKeywords(desc, ["construção", "obras", "edifício", "engenharia civil", "incorporação"])) setor = this.tabelaSetores["CONSTRUCAO_CIVIL"];
-                else if (this.matchKeywords(desc, ["metal", "máquina", "equipamento", "usinagem", "ferro", "aço", "ferramenta"])) setor = this.tabelaSetores["METAL_MECANICO"];
-                else if (this.matchKeywords(desc, ["químic", "tinta", "farmacêutico", "medicamento", "resina", "fertilizante"])) setor = this.tabelaSetores["QUIMICO"];
-                else if (this.matchKeywords(desc, ["papel", "celulose", "edição", "impressão", "gráfica"])) setor = this.tabelaSetores["PAPEL_CELULOSE"];
-                else if (this.matchKeywords(desc, ["extração", "minério", "pedra", "areia", "carvão", "petróleo"])) setor = this.tabelaSetores["EXTRATIVISTA"];
-                else if (this.matchKeywords(desc, ["serviço", "apoio", "limpeza", "consultoria", "agência"])) setor = this.tabelaSetores["SERVICOS"];
-
-                return {
-                    codigo: codigoLimpo,
-                    descricao: descricao || "Sem descrição",
-                    tipo: tipo, // "Principal" ou "Secundária"
-                    isIndustrial: isDivisaoIndustrialIBGE,
-                    classificacao: isDivisaoIndustrialIBGE ? "Industrial (IBGE Divisão " + prefixo2 + ")" : "Não Industrial",
-                    categoria: setor.carteira,
-                    macroSetor: setor.macroSetor
-                };
-            },
-
-            // Análise completa e integrada do conjunto total de CNAEs (Principal + Secundárias)
             analisarEmpresaCompleta(cnaePrincipalCod, cnaePrincipalDesc, cnaesSecundarios = [], analisarTodas = true) {
                 let listaCompletaAnalise = [];
 
-                // Avaliar principal
-                const principalItem = this.avaliarItemCnae(cnaePrincipalCod, cnaePrincipalDesc, "Principal");
-                listaCompletaAnalise.push(principalItem);
+                // 1. Analisar CNAE Principal
+                const normPrincipal = Utils.normalizeCnae(cnaePrincipalCod);
+                const isIndPrincipal = BaseAbrangenciaIndustrial.has(normPrincipal);
+                
+                listaCompletaAnalise.push({
+                    codigo: cnaePrincipalCod || "",
+                    codigoNormalizado: normPrincipal,
+                    descricao: cnaePrincipalDesc || "Sem descrição",
+                    tipo: "Principal",
+                    isIndustrial: isIndPrincipal
+                });
 
-                // Avaliar secundárias se solicitado
+                // 2. Analisar CNAEs Secundárias
                 if (analisarTodas && Array.isArray(cnaesSecundarios)) {
                     cnaesSecundarios.forEach(sec => {
-                        listaCompletaAnalise.push(this.avaliarItemCnae(sec.codigo, sec.descricao, "Secundária"));
+                        const normSec = Utils.normalizeCnae(sec.codigo);
+                        const isIndSec = BaseAbrangenciaIndustrial.has(normSec);
+                        listaCompletaAnalise.push({
+                            codigo: sec.codigo || "",
+                            codigoNormalizado: normSec,
+                            descricao: sec.descricao || "Sem descrição",
+                            tipo: "Secundária",
+                            isIndustrial: isIndSec
+                        });
                     });
                 }
 
-                // REGRA DE OURO DA CLASSIFICAÇÃO INDUSTRIAL:
-                // "Se existir pelo menos uma CNAE industrial entre dezenas de CNAEs secundárias, o sistema deverá responder: 'Sim, possui CNAE Industrial.'"
-                let cnaesIndustriaisEncontradas = listaCompletaAnalise.filter(item => item.isIndustrial);
-                let possuiIndustrial = cnaesIndustriaisEncontradas.length > 0;
+                // 3. Verificação de Ocorrência na Base de Abrangência
+                const cnaesIndustriaisEncontradas = listaCompletaAnalise.filter(item => item.isIndustrial);
+                const possuiIndustrial = cnaesIndustriaisEncontradas.length > 0;
 
                 let motivacaoIndustrial = "";
+                let listaCodigosIndustriaisFormatados = [];
+
                 if (possuiIndustrial) {
-                    let descricoesMotivo = cnaesIndustriaisEncontradas.map(i => `[CNAE ${i.codigo} - ${i.descricao} (${i.tipo})]`).join("; ");
-                    motivacaoIndustrial = `A empresa foi enquadrada como industrial pois possui ${cnaesIndustriaisEncontradas.length} atividade(s) pertencente(s) ao escopo industrial oficial do IBGE (Divisões 05 a 33): ${descricoesMotivo}.`;
+                    listaCodigosIndustriaisFormatados = cnaesIndustriaisEncontradas.map(i => i.codigo);
+                    const detalheItens = cnaesIndustriaisEncontradas.map(i => `[CNAE ${i.codigo} - ${i.descricao} (${i.tipo})]`).join("; ");
+                    motivacaoIndustrial = `CNAEs industriais identificadas na Base de Abrangência: ${detalheItens}.`;
                 } else {
-                    motivacaoIndustrial = "Nenhuma das atividades principais ou secundárias enquadra-se nas divisões industriais oficiais do IBGE (05 a 33).";
+                    motivacaoIndustrial = "Nenhuma das CNAEs da empresa foi localizada na Base de Abrangência Industrial.";
                 }
 
-                // Determinação do Perfil da Empresa
+                // 4. Perfil da Empresa (mantém a lógica padrão atual se não for industrial)
                 let perfilGeral = "Comércio / Serviços";
-                let macroSetorGeral = principalItem.macroSetor;
-                let carteiraGeral = principalItem.categoria;
+                let macroSetorGeral = "Diversos / Outros";
+                let carteiraGeral = "Diversos";
 
                 if (possuiIndustrial) {
                     perfilGeral = "Indústria";
-                    // Se houver setor industrial relevante nas secundárias ou principal, priorizar
-                    let primeiroIndustrial = cnaesIndustriaisEncontradas[0];
-                    if (primeiroIndustrial) {
-                        macroSetorGeral = primeiroIndustrial.macroSetor;
-                        carteiraGeral = primeiroIndustrial.categoria;
-                    }
+                    macroSetorGeral = "Indústria de Transformação / Extrativa";
+                    carteiraGeral = "Industrial";
                 } else {
-                    // Refinamento rigoroso para Comércio / Serviços
-                    let temComercio = listaCompletaAnalise.some(i => i.macroSetor.includes("Comércio"));
-                    let temServicos = listaCompletaAnalise.some(i => i.macroSetor.includes("Serviços") || i.macroSetor.includes("Tecnologia"));
+                    // Lógica padrão de fallback para Comércio / Serviços
+                    const todasDescricoes = listaCompletaAnalise.map(i => i.descricao.toLowerCase()).join(" ");
+                    const temComercio = todasDescricoes.includes("comércio") || todasDescricoes.includes("varejista") || todasDescricoes.includes("atacadista");
+                    const temServicos = todasDescricoes.includes("serviço") || todasDescricoes.includes("tecnologia") || todasDescricoes.includes("software");
+                    
                     if (temComercio && temServicos) {
                         perfilGeral = "Comércio e Serviços";
+                        macroSetorGeral = "Comércio e Serviços";
+                        carteiraGeral = "Comércio e Serviços";
                     } else if (temComercio) {
                         perfilGeral = "Comércio";
+                        macroSetorGeral = "Comércio";
+                        carteiraGeral = "Comércio";
                     } else {
                         perfilGeral = "Serviços";
+                        macroSetorGeral = "Serviços";
+                        carteiraGeral = "Serviços";
                     }
                 }
 
@@ -496,7 +505,7 @@
                     carteira: carteiraGeral,
                     possuiIndustrial: possuiIndustrial,
                     motivacaoIndustrial: motivacaoIndustrial,
-                    cnaesIndustriais: cnaesIndustriaisEncontradas,
+                    cnaesIndustriaisLista: listaCodigosIndustriaisFormatados,
                     todasAnalisadas: listaCompletaAnalise
                 };
             }
@@ -582,8 +591,6 @@
                     );
 
                     preencherFichaExecutiva(dados, analiseCnae);
-                    
-                    // Persistir no Supabase
                     Database.salvarConsulta(dados, analiseCnae);
 
                     loadingIndicator.classList.add('d-none');
@@ -597,13 +604,12 @@
             }
 
             function preencherFichaExecutiva(d, analise) {
-                // Dados Básicos
+                // Dados Básicos exigidos no resumo
                 document.getElementById('valRazaoSocial').textContent = d.razao_social || '-';
                 document.getElementById('valNomeFantasia').textContent = d.nome_fantasia || 'Não informado';
                 document.getElementById('valCnpj').textContent = Utils.formatCNPJ(d.cnpj);
                 document.getElementById('valPorte').textContent = d.porte || 'Não informado';
                 document.getElementById('valPerfil').textContent = analise.perfil;
-                document.getElementById('valMacroSetor').textContent = analise.macroSetor;
                 document.getElementById('valLocalizacao').textContent = `${d.municipio || '-'}/${d.uf || '-'}`;
                 document.getElementById('valSituacao').textContent = d.descricao_situacao_cadastral || '-';
                 document.getElementById('valAbertura').textContent = Utils.formatDate(d.data_inicio_atividade);
@@ -620,14 +626,14 @@
                     badgeHeader.innerHTML = `<i class="fa-solid fa-circle-xmark me-1"></i> ❌ Não possui CNAE Industrial`;
                 }
 
-                // Texto Motivação
+                // Texto Motivação (exibe códigos industriais encontrados, sem menção a sindicatos)
                 document.getElementById('textoMotivacaoIndustrial').textContent = analise.motivacaoIndustrial;
 
-                // Resumo Executivo text
-                const resumo = `A empresa <strong>${d.razao_social}</strong> (CNPJ: ${Utils.formatCNPJ(d.cnpj)}), situada em ${d.municipio}/${d.uf}, enquadrada como <strong>${analise.perfil}</strong> no setor de <strong>${analise.macroSetor}</strong>, possui situação cadastral <em>${d.descricao_situacao_cadastral}</em> e foi aberta em ${Utils.formatDate(d.data_inicio_atividade)}. A auditoria detalhou 1 CNAE principal e ${d.cnae_secundarios ? d.cnaes_secundarios.length : 0} CNAE(s) secundária(s).`;
+                // Resumo Executivo
+                const resumo = `A empresa <strong>${d.razao_social}</strong> (CNPJ: ${Utils.formatCNPJ(d.cnpj)}), localizada em ${d.municipio}/${d.uf}, enquadrada como <strong>${analise.perfil}</strong>, possui porte <strong>${d.porte || 'N/A'}</strong>. Atividade principal: <strong>${d.cnae_fiscal} - ${d.cnae_fiscal_descricao}</strong>, com ${d.cnae_secundarios ? d.cnae_secundarios.length : 0} atividade(s) secundária(s).`;
                 document.getElementById('resumoTexto').innerHTML = resumo;
 
-                // CNAE Principal Box
+                // CNAE Principal
                 document.getElementById('valCnaePrincipal').innerHTML = `<strong>${d.cnae_fiscal}</strong> - ${d.cnae_fiscal_descricao} <span class="badge bg-primary ms-2">Principal</span>`;
 
                 // Tabela de CNAEs Completa
@@ -637,13 +643,12 @@
                 analise.todasAnalisadas.forEach(item => {
                     const tr = document.createElement('tr');
                     const badgeTipo = item.tipo === 'Principal' ? '<span class="badge bg-primary">Principal</span>' : '<span class="badge bg-secondary">Secundária</span>';
-                    const badgeInd = item.isIndustrial ? '<span class="badge bg-success">Sim (Industrial)</span>' : '<span class="badge bg-light text-dark border">Não</span>';
+                    const badgeInd = item.isIndustrial ? '<span class="badge bg-success">Industrial (Presente na Base)</span>' : '<span class="badge bg-light text-dark border">Não Industrial</span>';
                     
                     tr.innerHTML = `
                         <td class="font-weight-bold">${item.codigo}</td>
                         <td>${item.descricao}</td>
                         <td>${badgeTipo}</td>
-                        <td>${item.macroSetor}</td>
                         <td>${badgeInd}</td>
                     `;
                     tbody.appendChild(tr);
@@ -676,22 +681,24 @@
                         tr.innerHTML = `<td>${formatted}</td><td colspan="6" class="text-danger">CNPJ Inválido Estruturalmente</td><td><span class="badge bg-danger">Inválido</span></td>`;
                     } else {
                         try {
-                            await new Promise(r => setTimeout(r, 400)); // Delay otimizado para evitar Rate Limit
+                            await new Promise(r => setTimeout(r, 400));
                             const d = await API.consultarCNPJ(raw);
                             const analise = CnaeAnalyzer.analisarEmpresaCompleta(d.cnae_fiscal, d.cnae_fiscal_descricao, d.cnaes_secundarios, analisarTodasSecundarias);
                             
                             const badgeIndHtml = analise.possuiIndustrial ? 
-                                '<span class="badge bg-success">✅ Sim</span>' : 
-                                '<span class="badge bg-danger">❌ Não</span>';
+                                '<span class="badge bg-success">✅ Possui Industrial</span>' : 
+                                '<span class="badge bg-danger">❌ Não Possui</span>';
+
+                            const listaCnaesStr = analise.cnaesIndustriaisLista.length > 0 ? analise.cnaesIndustriaisLista.join(", ") : "-";
 
                             tr.innerHTML = `
                                 <td class="font-monospace">${formatted}</td>
                                 <td>${d.razao_social || '-'}</td>
                                 <td>${d.porte || '-'}</td>
                                 <td><span class="badge bg-primary">${analise.perfil}</span></td>
-                                <td>${analise.macroSetor}</td>
+                                <td>${d.municipio || '-'}/${d.uf || '-'}</td>
                                 <td>${badgeIndHtml}</td>
-                                <td class="small text-muted" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${analise.motivacaoIndustrial}">${analise.motivacaoIndustrial}</td>
+                                <td class="small text-muted">${listaCnaesStr}</td>
                                 <td><span class="badge bg-success">Sucesso</span></td>
                             `;
 
@@ -700,10 +707,9 @@
                                 Razao_Social: d.razao_social,
                                 Porte: d.porte,
                                 Perfil: analise.perfil,
-                                Macro_Setor: analise.macroSetor,
+                                Municipio_UF: `${d.municipio}/${d.uf}`,
                                 Possui_CNAE_Industrial: analise.possuiIndustrial ? "Sim" : "Não",
-                                Motivacao: analise.motivacaoIndustrial,
-                                Municipio_UF: `${d.municipio}/${d.uf}`
+                                CNAEs_Industriais_Encontradas: listaCnaesStr
                             });
 
                             Database.salvarConsulta(d, analise);
@@ -725,8 +731,8 @@
                 if (batchResultsData.length === 0) return;
                 const ws = XLSX.utils.json_to_sheet(batchResultsData);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Analise_Lote_Industrial");
-                XLSX.writeFile(wb, `Relatorio_Lote_CNAE_Industrial.xlsx`);
+                XLSX.utils.book_append_sheet(wb, ws, "Analise_Lote_Base");
+                XLSX.writeFile(wb, `Relatorio_Lote_Classificacao_Industrial.xlsx`);
             }
 
             function showAlert(msg, type) {
