@@ -3,220 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta Integrada de Empresas - CNPJ</title>
+    <title>Inteligência Corporativa - Consulta CNPJ</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase SDK e Configuração -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const SUPABASE_URL = 'https://avimtkqdcmdnvkvllnpq.supabase.co';
-        const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aW10a3FkY21kbnZrdmxsbnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzI4NjAsImV4cCI6MjEwMTUwODg2MH0.-dm77ElvB7_HogpTY0ZF2_xWKYqYFfYWA55zDWoWSn4;
-        
-        let supabase = null;
-        if (window.supabase) {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
-    </script>
-
-    <!-- CSS Customizado -->
     <style>
         :root {
             --primary-blue: #003B7A;
-            --primary-blue-hover: #002D5E;
-            --primary-blue-light: #E6F0FA;
             --bg-page: #F4F6F8;
-            --white: #FFFFFF;
-            --text-dark: #1F2937;
-            --text-muted: #6B7280;
-            --text-light: #9CA3AF;
-            --success: #10B981;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --info: #3B82F6;
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-            --border-radius-md: 8px;
-            --border-radius-lg: 12px;
-            --border-light: 1px solid rgba(0, 0, 0, 0.06);
-            --transition-fast: 0.2s ease-in-out;
-            --transition-normal: 0.3s ease;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-dark);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        @media print {
-            .print-hide { display: none !important; }
-            body { background-color: #fff; }
-        }
+        body { font-family: "Segoe UI", sans-serif; background-color: var(--bg-page); }
+        .card { border: none; border-radius: 12px; }
+        .card-header { font-weight: bold; }
+        @media print { .print-hide { display: none !important; } }
+        .sticky-top { top: 0; z-index: 1020; }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm print-hide">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fa-solid fa-building mx-2"></i> Inteligência Corporativa | Consulta CNPJ
-            </a>
+            <a class="navbar-brand" href="#"><i class="fa-solid fa-building mx-2"></i> Inteligência Corporativa</a>
         </div>
     </nav>
 
     <div class="container my-4">
-        <!-- Seletor de Modo (Abas) -->
+        <!-- Abas -->
         <div class="row mb-3 print-hide">
             <div class="col-12">
-                <div class="btn-group w-100 shadow-sm" role="group">
-                    <button type="button" class="btn btn-primary active py-2" id="tabIndividual">
-                        <i class="fa-solid fa-magnifying-glass me-2"></i> Consulta Individual
-                    </button>
-                    <button type="button" class="btn btn-outline-primary py-2" id="tabLote">
-                        <i class="fa-solid fa-list-check me-2"></i> Consulta em Lote (Múltiplos CNPJs)
-                    </button>
+                <div class="btn-group w-100 shadow-sm">
+                    <button type="button" class="btn btn-primary active" id="tabIndividual">Consulta Individual</button>
+                    <button type="button" class="btn btn-outline-primary" id="tabLote">Consulta em Lote</button>
                 </div>
             </div>
         </div>
 
-        <!-- Área de Pesquisa Individual -->
+        <!-- Seção Individual -->
         <div id="individualSection">
             <div class="card shadow-sm mb-4 print-hide">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Consultar Empresa Individual</h5>
+                    <h5 class="card-title mb-3">Pesquisar CNPJ</h5>
                     <div class="input-group input-group-lg mb-3">
-                        <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                        <input type="text" id="cnpjInput" class="form-control" placeholder="Digite ou cole o CNPJ..." maxlength="18" autocomplete="off">
-                        <button class="btn btn-primary px-4" id="btnConsultar">Consultar</button>
+                        <input type="text" id="cnpjInput" class="form-control" placeholder="00.000.000/0000-00" maxlength="18">
+                        <button class="btn btn-primary" id="btnConsultar">Consultar</button>
                     </div>
-
-                    <!-- Opção para analisar CNAEs secundários -->
-                    <div class="form-check form-switch mt-2">
+                    <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="checkAnaliseSecundarios" checked>
-                        <label class="form-check-label text-muted" for="checkAnaliseSecundarios" style="font-size: 0.9rem; cursor: pointer;">
-                            <i class="fa-solid fa-gears text-primary"></i> Incluir CNAEs secundários na detecção de perfil industrial
-                        </label>
+                        <label class="form-check-label text-muted" for="checkAnaliseSecundarios">Analisar CNAEs secundários para definir perfil</label>
                     </div>
-
-                    <!-- Mensagens de Erro/Aviso -->
-                    <div id="alertContainer" class="mt-3"></div>
-                    <!-- Histórico -->
-                    <div class="mt-3" id="historyContainer">
-                        <small class="text-muted d-block mb-2">Últimas consultas:</small>
+                    <div id="alertContainer"></div>
+                    <div id="historyContainer" class="mt-2">
+                        <small class="text-muted d-block mb-1">Recentes:</small>
                         <div id="historyPills" class="d-flex flex-wrap gap-2"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Indicador de Carregamento Individual -->
-            <div id="loadingIndicator" class="text-center my-5 d-none print-hide">
-                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                    <span class="visually-hidden">Carregando...</span>
-                </div>
-                <p class="mt-2 text-muted">Buscando informações na base de dados...</p>
+            <!-- Loader -->
+            <div id="loadingIndicator" class="text-center my-5 d-none">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Acessando base de dados nacional...</p>
             </div>
 
-            <!-- Resultados da Consulta Individual -->
+            <!-- Resultados -->
             <div id="resultContainer" class="d-none">
-                <!-- Barra de Ações -->
                 <div class="d-flex flex-wrap gap-2 justify-content-end mb-3 print-hide">
-                    <button class="btn btn-outline-secondary btn-sm" id="btnCopiar"><i class="fa-regular fa-copy"></i> Copiar Dados</button>
-                    <button class="btn btn-outline-danger btn-sm" id="btnPDF"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
-                    <button class="btn btn-outline-success btn-sm" id="btnExcel"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
-                    <button class="btn btn-outline-dark btn-sm" id="btnImprimir"><i class="fa-solid fa-print"></i> Imprimir Ficha</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="btnCopiar"><i class="fa-regular fa-copy"></i> Copiar</button>
+                    <button class="btn btn-outline-danger btn-sm" id="btnPDF"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button class="btn btn-outline-success btn-sm" id="btnExcel"><i class="fa-solid fa-file-excel"></i> Excel</button>
                     <button class="btn btn-outline-warning btn-sm" id="btnLimpar"><i class="fa-solid fa-eraser"></i> Limpar</button>
                 </div>
 
                 <div id="fichaEmpresa">
-                    <!-- Resumo Inteligente -->
-                    <div class="alert alert-info shadow-sm mb-4" role="alert">
-                        <h5 class="alert-heading"><i class="fa-solid fa-robot"></i> Resumo Inteligente</h5>
-                        <p class="mb-0" id="resumoTexto"></p>
+                    <div class="alert alert-info shadow-sm mb-4">
+                        <h6 class="alert-heading"><i class="fa-solid fa-robot"></i> Resumo Inteligente</h6>
+                        <p class="mb-0 small" id="resumoTexto"></p>
                     </div>
 
-                    <div class="row g-4">
-                        <!-- Classificação (Ajustado para 3 colunas, sem analista) -->
+                    <div class="row g-3">
                         <div class="col-12">
-                            <div class="card shadow-sm border-primary h-100">
-                                <div class="card-header bg-primary text-white font-weight-bold">
-                                    <i class="fa-solid fa-sitemap"></i> Classificação Interna
-                                </div>
-                                <div class="card-body">
+                            <div class="card border-primary">
+                                <div class="card-body py-2">
                                     <div class="row text-center">
-                                        <div class="col-md-4 mb-2 mb-md-0 border-end">
-                                            <small class="text-muted text-uppercase">Perfil da Empresa</small>
-                                            <h5 id="valPerfil" class="text-primary fw-bold mt-1">-</h5>
-                                        </div>
-                                        <div class="col-md-4 mb-2 mb-md-0 border-end">
-                                            <small class="text-muted text-uppercase">Macro Setor</small>
-                                            <h5 id="valMacroSetor" class="text-primary fw-bold mt-1">-</h5>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small class="text-muted text-uppercase">Carteira</small>
-                                            <h5 id="valCarteira" class="fw-bold mt-1">-</h5>
-                                        </div>
+                                        <div class="col-md-4 border-end"><small class="text-muted">PERFIL</small><h6 id="valPerfil" class="mb-0 fw-bold">-</h6></div>
+                                        <div class="col-md-4 border-end"><small class="text-muted">MACRO SETOR</small><h6 id="valMacroSetor" class="mb-0 fw-bold">-</h6></div>
+                                        <div class="col-md-4"><small class="text-muted">CARTEIRA</small><h6 id="valCarteira" class="mb-0 fw-bold">-</h6></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Dados Gerais -->
                         <div class="col-md-6">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-header bg-light"><i class="fa-solid fa-id-card"></i> Dados Gerais</div>
-                                <ul class="list-group list-group-flush">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-header bg-light">Dados Gerais</div>
+                                <ul class="list-group list-group-flush small">
                                     <li class="list-group-item"><strong>Razão Social:</strong> <span id="valRazaoSocial"></span></li>
-                                    <li class="list-group-item"><strong>Nome Fantasia:</strong> <span id="valNomeFantasia"></span></li>
                                     <li class="list-group-item"><strong>CNPJ:</strong> <span id="valCnpj"></span></li>
-                                    <li class="list-group-item"><strong>Situação Cadastral:</strong> <span id="valSituacao"></span></li>
-                                    <li class="list-group-item"><strong>Data de Abertura:</strong> <span id="valAbertura"></span></li>
-                                    <li class="list-group-item"><strong>Natureza Jurídica:</strong> <span id="valNatureza"></span></li>
+                                    <li class="list-group-item"><strong>Situação:</strong> <span id="valSituacao"></span></li>
                                     <li class="list-group-item"><strong>Porte:</strong> <span id="valPorte"></span></li>
                                     <li class="list-group-item"><strong>Capital Social:</strong> <span id="valCapital"></span></li>
-                                    <li class="list-group-item"><strong>Matriz/Filial:</strong> <span id="valMatriz"></span></li>
                                 </ul>
                             </div>
                         </div>
 
-                        <!-- Endereço e Contato -->
                         <div class="col-md-6">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-header bg-light"><i class="fa-solid fa-map-location-dot"></i> Endereço e Contato</div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><strong>Endereço:</strong> <span id="valLogradouro"></span>, <span id="valNumero"></span></li>
-                                    <li class="list-group-item"><strong>Complemento:</strong> <span id="valComplemento"></span></li>
-                                    <li class="list-group-item"><strong>Bairro:</strong> <span id="valBairro"></span></li>
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-header bg-light">Localização e Contato</div>
+                                <ul class="list-group list-group-flush small">
                                     <li class="list-group-item"><strong>Cidade/UF:</strong> <span id="valCidadeUf"></span></li>
-                                    <li class="list-group-item"><strong>CEP:</strong> <span id="valCep"></span></li>
-                                    <li class="list-group-item"><strong>Telefone:</strong> <span id="valTelefone"></span></li>
+                                    <li class="list-group-item"><strong>Bairro:</strong> <span id="valBairro"></span></li>
+                                    <li class="list-group-item"><strong>Logradouro:</strong> <span id="valLogradouro"></span>, <span id="valNumero"></span></li>
                                     <li class="list-group-item"><strong>E-mail:</strong> <span id="valEmail"></span></li>
+                                    <li class="list-group-item"><strong>Telefone:</strong> <span id="valTelefone"></span></li>
                                 </ul>
                             </div>
                         </div>
 
-                        <!-- CNAEs -->
                         <div class="col-12">
                             <div class="card shadow-sm">
-                                <div class="card-header bg-light"><i class="fa-solid fa-industry"></i> Atividades Econômicas (CNAE)</div>
-                                <div class="card-body">
-                                    <h6 class="text-primary">Atividade Principal</h6>
-                                    <p class="mb-4" id="valCnaePrincipal"></p>
-                                    
-                                    <h6 class="text-secondary">Atividades Secundárias</h6>
-                                    <ul id="listCnaeSecundario" class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;"></ul>
+                                <div class="card-header bg-light">Atividades Econômicas</div>
+                                <div class="card-body p-2">
+                                    <p class="mb-1 small"><strong>Principal:</strong> <span id="valCnaePrincipal"></span></p>
+                                    <hr class="my-2">
+                                    <p class="mb-1 small text-muted"><strong>Secundárias:</strong></p>
+                                    <ul id="listCnaeSecundario" class="list-group list-group-flush small" style="max-height: 150px; overflow-y: auto;"></ul>
                                 </div>
                             </div>
                         </div>
@@ -225,636 +138,190 @@
             </div>
         </div>
 
-        <!-- Área de Consulta em Lote -->
+        <!-- Seção Lote -->
         <div id="batchSection" class="d-none">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="card-title mb-3"><i class="fa-solid fa-list-check text-primary"></i> Processamento de Lista de CNPJs</h5>
-                    <p class="text-muted small">Cole abaixo uma lista contendo múltiplos CNPJs (um por linha, ou separados por vírgula/ponto e vírgula):</p>
-                    <div class="mb-3">
-                        <textarea id="batchInput" class="form-control font-monospace" rows="6" placeholder="00000000000100&#10;11.111.111/0001-11&#10;22222222000122"></textarea>
-                    </div>
-                    <div class="d-flex flex-wrap gap-3 align-items-center">
-                        <button class="btn btn-primary px-4" id="btnProcessarLote">
-                            <i class="fa-solid fa-gears"></i> Processar Lote
-                        </button>
-                        <button class="btn btn-success d-none" id="btnExportarLoteExcel">
-                            <i class="fa-solid fa-file-excel"></i> Exportar Resultado para Excel
-                        </button>
-                        <span id="batchProgress" class="fw-bold text-primary"></span>
-                    </div>
+                    <h5>Processamento em Lote</h5>
+                    <textarea id="batchInput" class="form-control mb-3" rows="5" placeholder="Cole vários CNPJs aqui..."></textarea>
+                    <button class="btn btn-primary" id="btnProcessarLote">Processar Lista</button>
+                    <button class="btn btn-success d-none" id="btnExportarLoteExcel">Exportar Excel</button>
+                    <span id="batchProgress" class="ms-3 text-primary fw-bold"></span>
                 </div>
             </div>
-
-            <!-- Tabela de Resultados do Lote -->
-            <div id="batchResultContainer" class="card shadow-sm d-none mb-4">
-                <div class="card-header bg-dark text-white"><i class="fa-solid fa-table"></i> Resultados Consolidados do Lote</div>
-                <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                        <table class="table table-striped table-hover align-middle mb-0" id="batchTable">
-                            <thead class="table-light sticky-top">
-                                <tr>
-                                    <th>CNPJ</th>
-                                    <th>Razão Social</th>
-                                    <th>Porte</th>
-                                    <th>Perfil</th>
-                                    <th>Macro Setor</th>
-                                    <th>Carteira</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Preenchido dinamicamente via JS -->
-                            </tbody>
-                        </table>
-                    </div>
+            <div id="batchResultContainer" class="card shadow-sm d-none">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover small mb-0" id="batchTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>CNPJ</th>
+                                <th>Razão Social</th>
+                                <th>Porte</th>
+                                <th>Perfil</th>
+                                <th>Macro Setor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bibliotecas Externas -->
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- Scripts da Aplicação Unificados -->
     <script>
-        // Utils
         const Utils = {
-            formatCNPJ(value) {
-                if (!value) return '';
-                return value
-                    .replace(/\D/g, '')
-                    .replace(/^(\d{2})(\d)/, '$1.$2')
-                    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-                    .replace(/\.(\d{3})(\d)/, '.$1/$2')
-                    .replace(/(\d{4})(\d)/, '$1-$2')
-                    .substr(0, 18);
-            },
-            cleanCNPJ(value) {
-                if (!value) return '';
-                return value.toString().replace(/\D/g, '');
-            },
-            isValidCNPJ(cnpj) {
-                cnpj = this.cleanCNPJ(cnpj);
-                if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
-                let tamanho = cnpj.length - 2;
-                let numeros = cnpj.substring(0, tamanho);
-                let digitos = cnpj.substring(tamanho);
-                let soma = 0;
-                let pos = tamanho - 7;
-                for (let i = tamanho; i >= 1; i--) {
-                    soma += numeros.charAt(tamanho - i) * pos--;
-                    if (pos < 2) pos = 9;
-                }
-                let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-                if (resultado != digitos.charAt(0)) return false;
-                tamanho = tamanho + 1;
-                numeros = cnpj.substring(0, tamanho);
-                soma = 0;
-                pos = tamanho - 7;
-                for (let i = tamanho; i >= 1; i--) {
-                    soma += numeros.charAt(tamanho - i) * pos--;
-                    if (pos < 2) pos = 9;
-                }
-                resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-                if (resultado != digitos.charAt(1)) return false;
-                return true;
-            },
-            formatDate(dateString) {
-                if (!dateString) return 'Não informada';
-                const parts = dateString.split('-');
-                if (parts.length === 3) {
-                    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-                }
-                return dateString;
-            },
-            formatCurrency(value) {
-                if (value === null || value === undefined) return 'Não informado';
-                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+            formatCNPJ: v => v.replace(/\D/g, '').replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2').substr(0, 18),
+            cleanCNPJ: v => v.replace(/\D/g, ''),
+            isValidCNPJ: c => {
+                c = Utils.cleanCNPJ(c);
+                if (c.length !== 14 || /^(\d)\1+$/.test(c)) return false;
+                let t = 12, n = c.substring(0, t), d = c.substring(t), s = 0, p = 5;
+                for (let i = t; i >= 1; i--) { s += n.charAt(t - i) * p--; if (p < 2) p = 9; }
+                if (parseInt(d.charAt(0)) !== (s % 11 < 2 ? 0 : 11 - s % 11)) return false;
+                t = 13; n = c.substring(0, t); s = 0; p = 6;
+                for (let i = t; i >= 1; i--) { s += n.charAt(t - i) * p--; if (p < 2) p = 9; }
+                return parseInt(d.charAt(1)) === (s % 11 < 2 ? 0 : 11 - s % 11);
             }
         };
 
-        // API
-       // API Corrigida
-        // API Atualizada com Proxy Anti-CORS
         const API = {
             async consultarCNPJ(cnpj) {
-                const cnpjLimpo = Utils.cleanCNPJ(cnpj);
-                // Usando um proxy CORS gratuito para liberar o acesso no notebook e no celular
-                const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`)}`;
-
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) {
-                        if (response.status === 404) {
-                            throw new Error("CNPJ não encontrado na base de dados.");
-                        }
-                        throw new Error("Erro na comunicação com a API de consulta.");
-                    }
-                    const data = await response.json();
-                    return data;
-                } catch (error) {
-                    throw error;
-                }
+                const clean = Utils.cleanCNPJ(cnpj);
+                // Proxy para evitar erro de CORS em navegadores
+                const proxy = "https://api.allorigins.win/raw?url=";
+                const target = `https://brasilapi.com.br/api/cnpj/v1/${clean}`;
+                
+                const response = await fetch(proxy + encodeURIComponent(target));
+                if (!response.ok) throw new Error("CNPJ não encontrado ou erro na API.");
+                return await response.json();
             }
-        };
-        // Mapeamento de CNAEs (Sem nomes de analistas)
-        const TabelaClassificacao = {
-            "NAO_INDUSTRIAL": { carteira: "-", macroSetor: "CNAE não industrial e não relacionado" },
-            "P_D": { carteira: "-", macroSetor: "Pesquisa e Desenvolvimento (P&D)" },
-            "DIVERSOS_OUTROS": { carteira: "-", macroSetor: "Diversos (Outros)" },
-            "ALIMENTACAO_ANIMAL": { carteira: "Alimentação Animal", macroSetor: "Alimentação Animal" },
-            "ALIMENTOS_BEBIDAS": { carteira: "Alimentos e Bebidas", macroSetor: "Alimentos e Bebidas" },
-            "ARTEFATOS_PAPEL": { carteira: "Artefatos de Papel", macroSetor: "Papel e Papelão" },
-            "BORRACHA": { carteira: "Borracha", macroSetor: "Borracha e Plástico (Borracha)" },
-            "CONSTRUCAO_CIVIL": { carteira: "Construção Civil", macroSetor: "Construção Pesada e Civil" },
-            "CONSTRUCAO_NAVAL": { carteira: "Construção Naval", macroSetor: "Naval" },
-            "EDITORIAL_GRAFICO": { carteira: "Editorial | Gráfico", macroSetor: "Editorial e Gráfica" },
-            "ENERGIA": { carteira: "Energia", macroSetor: "SIUP" },
-            "EXTRATIVISTA": { carteira: "Extrativista", macroSetor: "Extrativista" },
-            "INDUSTRIA_ACO": { carteira: "Indústria do Aço", macroSetor: "Siderurgia e Metalurgia" },
-            "MADEIRA_MOBILIARIO": { carteira: "Madeira e Mobiliário", macroSetor: "Madeira e Mobiliário" },
-            "METAL_MECANICO": { carteira: "Metal Mecânico", macroSetor: "Metal Mecânico" },
-            "PANIFICACAO": { carteira: "Panificação", macroSetor: "Alimentos e Bebidas" },
-            "PAPEL": { carteira: "Papel", macroSetor: "Papel e Papelão" },
-            "PLASTICO": { carteira: "Plástico", macroSetor: "Borracha e Plástico (Plástico)" },
-            "REFRATARIO": { carteira: "Refratário", macroSetor: "Minerais não Metálicos" },
-            "REFRIGERACAO_AR": { carteira: "Refrigeração de Ar", macroSetor: "SIUP" },
-            "VIDRO": { carteira: "Vidro", macroSetor: "Minerais não Metálicos (Vidro)" },
-            "SERVICOS_COMPLEMENTARES": { carteira: "-", macroSetor: "Diversos (Serviços Complementares)" },
-            "AUDIOVISUAL": { carteira: "Audiovisual", macroSetor: "Audiovisual" },
-            "AUTOMOTIVO": { carteira: "Automotivo", macroSetor: "Indústria de Transportes" },
-            "CADEIA_MODA": { carteira: "Cadeia da Moda", macroSetor: "Moda" },
-            "COSMETICO": { carteira: "Cosmético", macroSetor: "Químicos" },
-            "FARMACEUTICO": { carteira: "Farmacêutico", macroSetor: "Químicos" },
-            "FOSFORO": { carteira: "Fósforo", macroSetor: "Químicos" },
-            "INDUSTRIA_DEFESA": { carteira: "Indústria de Defesa", macroSetor: "Indústria de Defesa" },
-            "LAVANDERIA": { carteira: "Lavanderia", macroSetor: "Químicos" },
-            "QUIMICO": { carteira: "Químico", macroSetor: "Químicos" },
-            "REPARACAO": { carteira: "Reparação", macroSetor: "Indústria de Transportes" },
-            "SAUDE_ANIMAL": { carteira: "Saúde Animal", macroSetor: "Saúde Animal" },
-            "TABACO": { carteira: "Tabaco", macroSetor: "Diversos (Fumo)" },
-            "TIC": { carteira: "TIC", macroSetor: "TIC" },
-            "VELAS_SABAO": { carteira: "Velas e Sabão", macroSetor: "Químicos" }
-        };
-
-        const CnaeDicionario = {
-            "1011201": "ALIMENTOS_BEBIDAS",
-            "2910701": "AUTOMOTIVO",
-            "4120400": "CONSTRUCAO_CIVIL",
-            "6204000": "TIC",
-            "1412601": "CADEIA_MODA"
         };
 
         const CnaeMapper = {
-            matchKeywords(descricao, palavras) {
-                return palavras.some(palavra => descricao.includes(palavra));
+            keywords: {
+                "TIC": ["software", "tecnologia", "informática", "dados", "internet", "telecomunica"],
+                "AUTOMOTIVO": ["automóve", "veículo", "carro", "moto", "autopeças"],
+                "CADEIA_MODA": ["vestuário", "roupa", "têxtil", "calçado", "moda"],
+                "ALIMENTOS_BEBIDAS": ["alimento", "bebida", "carne", "laticínio", "fruta", "panificação", "pão"],
+                "METAL_MECANICO": ["metal", "máquina", "equipamento", "usinagem", "ferro", "aço"],
+                "CONSTRUCAO_CIVIL": ["construção", "obras", "edifício", "engenharia civil"]
             },
-            avaliarSetor(codigoCnae, descricaoCnae) {
-                const codigoLimpo = (codigoCnae || "").toString().replace(/\D/g, ''); 
-                const desc = (descricaoCnae || "").toLowerCase();
-                if (CnaeDicionario[codigoLimpo]) return TabelaClassificacao[CnaeDicionario[codigoLimpo]];
+            classificar(principalCod, principalDesc, secundários = [], analisarSec = true) {
+                let todos = [{ cod: principalCod, desc: principalDesc.toLowerCase() }];
+                if (analisarSec) secundários.forEach(s => todos.push({ cod: s.codigo, desc: s.descricao.toLowerCase() }));
 
-                if (this.matchKeywords(desc, ["software", "tecnologia", "informática", "computador", "internet", "dados", "sistema", "telecomunica"])) return TabelaClassificacao["TIC"];
-                if (this.matchKeywords(desc, ["automóve", "veículo", "carro", "moto", "caminhão", "reboque", "autopeças"])) return TabelaClassificacao["AUTOMOTIVO"];
-                if (this.matchKeywords(desc, ["vestuário", "roupa", "calçado", "têxtil", "tecido", "acessório", "moda", "malha", "costura"])) return TabelaClassificacao["CADEIA_MODA"];
-                if (this.matchKeywords(desc, ["audiovisual", "cinema", "vídeo", "televisão", "som", "música", "gravação", "filme"])) return TabelaClassificacao["AUDIOVISUAL"];
-                if (this.matchKeywords(desc, ["cosmético", "perfume", "higiene", "beleza"])) return TabelaClassificacao["COSMETICO"];
-                if (this.matchKeywords(desc, ["farmacêutico", "medicamento", "remédio", "fármaco"])) return TabelaClassificacao["FARMACEUTICO"];
-                if (this.matchKeywords(desc, ["lavanderia", "lavagem", "tingimento"])) return TabelaClassificacao["LAVANDERIA"];
-                if (this.matchKeywords(desc, ["químic", "tinta", "verniz", "fertilizante", "agrotóxico", "resina"])) return TabelaClassificacao["QUIMICO"];
-                if (this.matchKeywords(desc, ["reparação", "manutenção de veículos", "manutenção de máquinas"])) return TabelaClassificacao["REPARACAO"];
-                if (this.matchKeywords(desc, ["saúde animal", "veterinári", "defesa sanitária animal"])) return TabelaClassificacao["SAUDE_ANIMAL"];
-                if (this.matchKeywords(desc, ["defesa", "armamento", "bélico", "munição"])) return TabelaClassificacao["INDUSTRIA_DEFESA"];
-                if (this.matchKeywords(desc, ["fumo", "tabaco", "cigarro"])) return TabelaClassificacao["TABACO"];
-                if (this.matchKeywords(desc, ["vela", "sabão", "detergente"])) return TabelaClassificacao["VELAS_SABAO"];
-                if (this.matchKeywords(desc, ["fósforo"])) return TabelaClassificacao["FOSFORO"];
+                let setorEncontrado = "Diversos / Outros";
+                let perfil = "Comércio / Serviços";
 
-                if (this.matchKeywords(desc, ["ração", "alimentação animal"])) return TabelaClassificacao["ALIMENTACAO_ANIMAL"];
-                if (this.matchKeywords(desc, ["alimento", "bebida", "carne", "laticínio", "fruta", "legume", "cereal", "açúcar"])) return TabelaClassificacao["ALIMENTOS_BEBIDAS"];
-                if (this.matchKeywords(desc, ["padaria", "panificação", "pão"])) return TabelaClassificacao["PANIFICACAO"];
-                if (this.matchKeywords(desc, ["construção", "obras", "edifício", "engenharia civil", "incorporação"])) return TabelaClassificacao["CONSTRUCAO_CIVIL"];
-                if (this.matchKeywords(desc, ["naval", "embarcação", "navio", "barco"])) return TabelaClassificacao["CONSTRUCAO_NAVAL"];
-                if (this.matchKeywords(desc, ["energia", "eletricidade", "gás", "geração de energia"])) return TabelaClassificacao["ENERGIA"];
-                if (this.matchKeywords(desc, ["refrigeração", "ar condicionado", "climatização"])) return TabelaClassificacao["REFRIGERACAO_AR"];
-                if (this.matchKeywords(desc, ["papel", "celulose", "embalagem de papel"])) return TabelaClassificacao["PAPEL"];
-                if (this.matchKeywords(desc, ["artefato de papel"])) return TabelaClassificacao["ARTEFATOS_PAPEL"];
-                if (this.matchKeywords(desc, ["borracha", "pneu"])) return TabelaClassificacao["BORRACHA"];
-                if (this.matchKeywords(desc, ["plástico", "pvc", "acrílico"])) return TabelaClassificacao["PLASTICO"];
-                if (this.matchKeywords(desc, ["aço", "siderurgia", "laminados de ferro"])) return TabelaClassificacao["INDUSTRIA_ACO"];
-                if (this.matchKeywords(desc, ["metal", "metalurgia", "máquina", "equipamento", "usinagem", "ferramenta"])) return TabelaClassificacao["METAL_MECANICO"];
-                if (this.matchKeywords(desc, ["madeira", "móvel", "móveis", "marcenaria", "serraria"])) return TabelaClassificacao["MADEIRA_MOBILIARIO"];
-                if (this.matchKeywords(desc, ["extração", "minério", "pedra", "areia", "carvão"])) return TabelaClassificacao["EXTRATIVISTA"];
-                if (this.matchKeywords(desc, ["edição", "livro", "jornal", "impressão", "gráfica"])) return TabelaClassificacao["EDITORIAL_GRAFICO"];
-                if (this.matchKeywords(desc, ["vidro", "cristal"])) return TabelaClassificacao["VIDRO"];
-                if (this.matchKeywords(desc, ["cerâmica", "refratário", "cimento", "gesso"])) return TabelaClassificacao["REFRATARIO"];
-                if (this.matchKeywords(desc, ["pesquisa", "desenvolvimento", "p&d"])) return TabelaClassificacao["P_D"];
+                // Critério simples de Indústria: Se o CNAE começa com 05 a 33 (Divisões industriais do IBGE)
+                const isIndustrial = (cod) => {
+                    const prefix = parseInt(cod.toString().substring(0, 2));
+                    return prefix >= 5 && prefix <= 33;
+                };
 
-                if (this.matchKeywords(desc, ["serviço", "apoio", "limpeza", "conservação", "consultoria", "agência", "locação"])) return TabelaClassificacao["SERVICOS_COMPLEMENTARES"];
-                if (this.matchKeywords(desc, ["comércio", "varejista", "atacadista", "associação", "sindicato", "banco", "condomínio"])) return TabelaClassificacao["NAO_INDUSTRIAL"];
-
-                return TabelaClassificacao["DIVERSOS_OUTROS"];
-            },
-            classificar(codigoCnae, descricaoCnae, porte, cnaesSecundarios = [], analisarSecundarios = true) {
-                let classificacaoPrincipal = { ...this.avaliarSetor(codigoCnae, descricaoCnae) };
-                let todosCnaes = [{ codigo: codigoCnae, descricao: descricaoCnae }];
-                if (analisarSecundarios && Array.isArray(cnaesSecundarios) && cnaesSecundarios.length > 0) {
-                    todosCnaes = todosCnaes.concat(cnaesSecundarios);
-                }
-                const setoresNaoIndustriais = [
-                    "CNAE não industrial e não relacionado", 
-                    "Diversos (Serviços Complementares)", 
-                    "Diversos (Outros)"
-                ];
-                let temIndustria = false;
-                for (let cnae of todosCnaes) {
-                    let analise = this.avaliarSetor(cnae.codigo, cnae.descricao);
-                    if (!setoresNaoIndustriais.includes(analise.macroSetor)) {
-                        temIndustria = true;
-                        break;
+                for (let item of todos) {
+                    if (isIndustrial(item.cod)) perfil = "Indústria";
+                    for (let [setor, chaves] of Object.entries(this.keywords)) {
+                        if (chaves.some(k => item.desc.includes(k))) {
+                            setorEncontrado = setor.replace(/_/g, ' ');
+                        }
                     }
                 }
-                classificacaoPrincipal.perfil = temIndustria ? "Indústria" : "Comércio / Serviços";
-                return classificacaoPrincipal;
+                return { perfil, macroSetor: setorEncontrado, carteira: setorEncontrado };
             }
         };
 
-        // Lógica Global
-        let currentCompanyData = null;
-        let batchResultsData = [];
+        let currentData = null;
 
         document.addEventListener("DOMContentLoaded", () => {
-            const inputCnpj = document.getElementById('cnpjInput');
-            const btnConsultar = document.getElementById('btnConsultar');
-            const resultContainer = document.getElementById('resultContainer');
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            const alertContainer = document.getElementById('alertContainer');
+            const input = document.getElementById('cnpjInput');
+            const btn = document.getElementById('btnConsultar');
 
-            // Gerenciamento de Abas
-            const tabIndividual = document.getElementById('tabIndividual');
-            const tabLote = document.getElementById('tabLote');
-            const individualSection = document.getElementById('individualSection');
-            const batchSection = document.getElementById('batchSection');
+            input.addEventListener('input', e => e.target.value = Utils.formatCNPJ(e.target.value));
 
-            tabIndividual.addEventListener('click', () => {
-                tabIndividual.className = 'btn btn-primary active py-2';
-                tabLote.className = 'btn btn-outline-primary py-2';
-                individualSection.classList.remove('d-none');
-                batchSection.classList.add('d-none');
-                if (currentCompanyData) resultContainer.classList.remove('d-none');
-            });
+            btn.onclick = async () => {
+                const val = input.value;
+                if (!Utils.isValidCNPJ(val)) return alert("CNPJ Inválido");
 
-            tabLote.addEventListener('click', () => {
-                tabLote.className = 'btn btn-primary active py-2';
-                tabIndividual.className = 'btn btn-outline-primary py-2';
-                batchSection.classList.remove('d-none');
-                individualSection.classList.add('d-none');
-                resultContainer.classList.add('d-none');
-            });
-
-            renderHistory();
-
-            inputCnpj.addEventListener('input', (e) => {
-                e.target.value = Utils.formatCNPJ(e.target.value);
-            });
-
-            inputCnpj.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') realizarConsulta();
-            });
-
-            inputCnpj.addEventListener('paste', () => {
-                setTimeout(() => {
-                    if (Utils.isValidCNPJ(inputCnpj.value)) {
-                        realizarConsulta();
-                    }
-                }, 100);
-            });
-
-            btnConsultar.addEventListener('click', realizarConsulta);
-
-            document.getElementById('btnLimpar').addEventListener('click', limparTela);
-            document.getElementById('btnCopiar').addEventListener('click', copiarDados);
-            document.getElementById('btnImprimir').addEventListener('click', () => window.print());
-            document.getElementById('btnPDF').addEventListener('click', exportarPDF);
-            document.getElementById('btnExcel').addEventListener('click', exportarExcel);
-
-            // Processamento em Lote
-            document.getElementById('btnProcessarLote').addEventListener('click', processarLoteCNPJs);
-            document.getElementById('btnExportarLoteExcel').addEventListener('click', exportarLoteExcel);
-
-            async function realizarConsulta() {
-                const cnpj = inputCnpj.value;
-                alertContainer.innerHTML = '';
-
-                if (!Utils.isValidCNPJ(cnpj)) {
-                    showAlert('CNPJ inválido. Verifique os números informados.', 'warning');
-                    return;
-                }
-
-                resultContainer.classList.add('d-none');
-                loadingIndicator.classList.remove('d-none');
-                btnConsultar.disabled = true;
+                document.getElementById('loadingIndicator').classList.remove('d-none');
+                document.getElementById('resultContainer').classList.add('d-none');
 
                 try {
-                    const dados = await API.consultarCNPJ(cnpj);
-                    currentCompanyData = dados;
-
-                    preencherDadosGerais(dados);
-                    preencherEndereco(dados);
-                    preencherCNAEs(dados);
-                    preencherClassificacao(dados);
-                    gerarResumoInteligente(dados);
-                    
-                    saveToHistory(dados.cnpj, dados.razao_social);
-
-                    loadingIndicator.classList.add('d-none');
-                    resultContainer.classList.remove('d-none');
-                } catch (error) {
-                    loadingIndicator.classList.add('d-none');
-                    showAlert(error.message, 'error');
+                    const data = await API.consultarCNPJ(val);
+                    currentData = data;
+                    renderData(data);
+                } catch (e) {
+                    alert(e.message);
                 } finally {
-                    btnConsultar.disabled = false;
+                    document.getElementById('loadingIndicator').classList.add('d-none');
                 }
-            }
+            };
 
-            function preencherDadosGerais(data) {
+            function renderData(data) {
+                const classif = CnaeMapper.classificar(data.cnae_fiscal, data.cnae_fiscal_descricao, data.cnaes_secundarios, document.getElementById('checkAnaliseSecundarios').checked);
+                
                 document.getElementById('valRazaoSocial').textContent = data.razao_social;
-                document.getElementById('valNomeFantasia').textContent = data.nome_fantasia || 'Não informado';
                 document.getElementById('valCnpj').textContent = Utils.formatCNPJ(data.cnpj);
                 document.getElementById('valSituacao').textContent = data.descricao_situacao_cadastral;
-                document.getElementById('valAbertura').textContent = Utils.formatDate(data.data_inicio_atividade);
-                document.getElementById('valNatureza').textContent = data.natureza_juridica;
-                document.getElementById('valPorte').textContent = data.porte || 'Não informado';
-                document.getElementById('valCapital').textContent = Utils.formatCurrency(data.capital_social);
-                document.getElementById('valMatriz').textContent = data.identificador_matriz_filial === 1 ? 'Matriz' : 'Filial';
-            }
-
-            function preencherEndereco(data) {
-                document.getElementById('valLogradouro').textContent = `${data.logradouro || ''}`;
-                document.getElementById('valNumero').textContent = data.numero || 'S/N';
-                document.getElementById('valComplemento').textContent = data.complemento || '-';
-                document.getElementById('valBairro').textContent = data.bairro;
+                document.getElementById('valPorte').textContent = data.porte || 'N/A';
+                document.getElementById('valCapital').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.capital_social);
                 document.getElementById('valCidadeUf').textContent = `${data.municipio} / ${data.uf}`;
-                
-                let cepFormatado = data.cep ? data.cep.toString().replace(/^(\d{5})(\d{3})$/, "$1-$2") : '';
-                document.getElementById('valCep').textContent = cepFormatado;
-                
-                let tel = data.ddd_telefone_1 ? `(${data.ddd_telefone_1.substring(0,2)}) ${data.ddd_telefone_1.substring(2)}` : 'Não informado';
-                document.getElementById('valTelefone').textContent = tel;
-                document.getElementById('valEmail').textContent = data.email || 'Não informado';
-            }
-
-            function preencherCNAEs(data) {
+                document.getElementById('valBairro').textContent = data.bairro;
+                document.getElementById('valLogradouro').textContent = data.logradouro;
+                document.getElementById('valNumero').textContent = data.numero;
+                document.getElementById('valEmail').textContent = data.email || 'N/A';
+                document.getElementById('valTelefone').textContent = data.ddd_telefone_1 || 'N/A';
                 document.getElementById('valCnaePrincipal').textContent = `${data.cnae_fiscal} - ${data.cnae_fiscal_descricao}`;
-                const listSecundario = document.getElementById('listCnaeSecundario');
-                listSecundario.innerHTML = '';
+                
+                document.getElementById('valPerfil').textContent = classif.perfil;
+                document.getElementById('valMacroSetor').textContent = classif.macroSetor;
+                document.getElementById('valCarteira').textContent = classif.carteira;
 
-                if (data.cnaes_secundarios && data.cnaes_secundarios.length > 0) {
-                    data.cnaes_secundarios.forEach(cnae => {
-                        const li = document.createElement('li');
-                        li.className = 'list-group-item text-muted';
-                        li.style.fontSize = '0.85rem';
-                        li.textContent = `${cnae.codigo} - ${cnae.descricao}`;
-                        listSecundario.appendChild(li);
-                    });
-                } else {
-                    listSecundario.innerHTML = '<li class="list-group-item text-muted">Nenhuma atividade secundária registrada.</li>';
-                }
+                const listSec = document.getElementById('listCnaeSecundario');
+                listSec.innerHTML = data.cnaes_secundarios.map(s => `<li class="list-group-item py-1">${s.codigo} - ${s.descricao}</li>`).join('');
+
+                document.getElementById('resumoTexto').innerHTML = `A empresa <strong>${data.razao_social}</strong> é classificada como <strong>${classif.perfil}</strong>, atuando principalmente em <strong>${data.cnae_fiscal_descricao}</strong>. Está situada em ${data.municipio}/${data.uf} com situação cadastral ${data.descricao_situacao_cadastral}.`;
+                
+                document.getElementById('resultContainer').classList.remove('d-none');
             }
 
-            function preencherClassificacao(data) {
-                const incluirSecundarios = document.getElementById('checkAnaliseSecundarios').checked;
-                const classificacao = CnaeMapper.classificar(
-                    data.cnae_fiscal.toString(), 
-                    data.cnae_fiscal_descricao, 
-                    data.porte, 
-                    data.cnaes_secundarios, 
-                    incluirSecundarios
-                );
-                document.getElementById('valPerfil').textContent = classificacao.perfil;
-                document.getElementById('valMacroSetor').textContent = classificacao.macroSetor;
-                document.getElementById('valCarteira').textContent = classificacao.carteira;
-            }
+            // Alternar Abas
+            document.getElementById('tabIndividual').onclick = () => {
+                document.getElementById('individualSection').classList.remove('d-none');
+                document.getElementById('batchSection').classList.add('d-none');
+            };
+            document.getElementById('tabLote').onclick = () => {
+                document.getElementById('individualSection').classList.add('d-none');
+                document.getElementById('batchSection').classList.remove('d-none');
+            };
 
-            function gerarResumoInteligente(data) {
-                const porte = data.porte ? data.porte.toLowerCase() : 'indefinido';
-                const anoFundacao = data.data_inicio_atividade ? data.data_inicio_atividade.substring(0,4) : 'ano desconhecido';
-                const local = `${data.municipio}/${data.uf}`;
-                const atividade = data.cnae_fiscal_descricao ? data.cnae_fiscal_descricao.toLowerCase() : 'atividades diversas';
-                const incluirSecundarios = document.getElementById('checkAnaliseSecundarios').checked;
-                const classificacao = CnaeMapper.classificar(
-                    data.cnae_fiscal.toString(), 
-                    data.cnae_fiscal_descricao, 
-                    data.porte, 
-                    data.cnaes_secundarios, 
-                    incluirSecundarios
-                );
-                const setor = classificacao.macroSetor !== '-' ? classificacao.macroSetor : classificacao.carteira;
-                const perfilTexto = classificacao.perfil === "Indústria" ? "é uma Indústria que atua" : "é uma empresa de Comércio/Serviços que atua";
-                const resumo = `A empresa <strong>${data.razao_social}</strong> ${perfilTexto} no setor de <strong>${setor}</strong>, possui porte <strong>${porte}</strong>, foi fundada em <strong>${anoFundacao}</strong>, está localizada em <strong>${local}</strong> e possui como principal atividade a <strong>${atividade}</strong>.`;
-                document.getElementById('resumoTexto').innerHTML = resumo;
-            }
-
-            async function processarLoteCNPJs() {
-                const rawText = document.getElementById('batchInput').value;
-                const progressSpan = document.getElementById('batchProgress');
-                const btnProcessar = document.getElementById('btnProcessarLote');
-                const btnExcelLote = document.getElementById('btnExportarLoteExcel');
-                const resultTableContainer = document.getElementById('batchResultContainer');
+            // Lote
+            document.getElementById('btnProcessarLote').onclick = async () => {
+                const text = document.getElementById('batchInput').value;
+                const cnpjs = [...new Set(text.match(/\d{14}/g) || [])];
                 const tbody = document.querySelector('#batchTable tbody');
-
-                const lines = rawText.split(/[\n,;]+/);
-                let cnpjs = [];
-                lines.forEach(l => {
-                    let cleaned = Utils.cleanCNPJ(l);
-                    if (cleaned.length > 0) cnpjs.push(cleaned);
-                });
-
-                cnpjs = [...new Set(cnpjs)]; // Remove duplicados
-
-                if (cnpjs.length === 0) {
-                    alert('Insira pelo menos um CNPJ para processar o lote.');
-                    return;
-                }
-
-                btnProcessar.disabled = true;
-                btnExcelLote.classList.add('d-none');
-                batchResultsData = [];
                 tbody.innerHTML = '';
-                resultTableContainer.classList.remove('d-none');
+                document.getElementById('batchResultContainer').classList.remove('d-none');
 
-                const incluirSecundarios = document.getElementById('checkAnaliseSecundarios').checked;
-                let count = 0;
-
-                for (let rawCnpj of cnpjs) {
-                    count++;
-                    progressSpan.textContent = `Processando ${count} de ${cnpjs.length}...`;
-                    let formatted = Utils.formatCNPJ(rawCnpj);
-
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${formatted}</td>
-                        <td colspan="5" class="text-muted">Buscando dados...</td>
-                        <td><span class="badge bg-warning text-dark">Aguardando</span></td>
-                    `;
+                for (let c of cnpjs) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${c}</td><td colspan="4">Processando...</td><td>...</td>`;
                     tbody.appendChild(tr);
 
-                    if (!Utils.isValidCNPJ(rawCnpj)) {
-                        tr.children[1].outerHTML = `<td colspan="5" class="text-danger">CNPJ Inválido estruturalmente</td>`;
-                        tr.children[6].innerHTML = `<span class="badge bg-danger">Inválido</span>`;
-                        batchResultsData.push({ CNPJ: formatted, Razao_Social: 'CNPJ Inválido', Status: 'Inválido' });
-                        continue;
-                    }
-
                     try {
-                        // Delay amigável para evitar rate-limit na API pública
-                        await new Promise(r => setTimeout(r, 350));
-                        const dados = await API.consultarCNPJ(rawCnpj);
-                        
-                        const classificacao = CnaeMapper.classificar(
-                            dados.cnae_fiscal.toString(), 
-                            dados.cnae_fiscal_descricao, 
-                            dados.porte, 
-                            dados.cnaes_secundarios, 
-                            incluirSecundarios
-                        );
-
-                        tr.innerHTML = `
-                            <td>${formatted}</td>
-                            <td>${dados.razao_social || '-'}</td>
-                            <td>${dados.porte || 'Não informado'}</td>
-                            <td><span class="badge bg-primary">${classificacao.perfil}</span></td>
-                            <td>${classificacao.macroSetor}</td>
-                            <td>${classificacao.carteira}</td>
-                            <td><span class="badge bg-success">Sucesso</span></td>
-                        `;
-
-                        batchResultsData.push({
-                            CNPJ: formatted,
-                            Razao_Social: dados.razao_social || '',
-                            Nome_Fantasia: dados.nome_fantasia || '',
-                            Situacao: dados.descricao_situacao_cadastral || '',
-                            Porte: dados.porte || '',
-                            Perfil: classificacao.perfil,
-                            Macro_Setor: classificacao.macroSetor,
-                            Carteira: classificacao.carteira,
-                            CNAE_Principal: `${dados.cnae_fiscal} - ${dados.cnae_fiscal_descricao}`,
-                            Municipio_UF: `${dados.municipio}/${dados.uf}`,
-                            Status: 'Sucesso'
-                        });
-
-                    } catch (err) {
-                        tr.children[1].outerHTML = `<td colspan="5" class="text-danger">${err.message}</td>`;
-                        tr.children[6].innerHTML = `<span class="badge bg-danger">Erro API</span>`;
-                        batchResultsData.push({ CNPJ: formatted, Razao_Social: 'Erro na consulta', Status: err.message });
+                        const d = await API.consultarCNPJ(c);
+                        const cl = CnaeMapper.classificar(d.cnae_fiscal, d.cnae_fiscal_descricao, d.cnaes_secundarios);
+                        tr.innerHTML = `<td>${c}</td><td>${d.razao_social}</td><td>${d.porte}</td><td>${cl.perfil}</td><td>${cl.macroSetor}</td><td><span class="badge bg-success">OK</span></td>`;
+                    } catch {
+                        tr.innerHTML = `<td>${c}</td><td colspan="4" class="text-danger">Erro ao consultar</td><td><span class="badge bg-danger">Erro</span></td>`;
                     }
                 }
-
-                progressSpan.textContent = `Lote processado com sucesso! (${cnpjs.length} consultados)`;
-                btnProcessar.disabled = false;
-                if (batchResultsData.length > 0) {
-                    btnExcelLote.classList.remove('d-none');
-                }
-            }
-
-            function exportarLoteExcel() {
-                if (batchResultsData.length === 0) return;
-                const ws = XLSX.utils.json_to_sheet(batchResultsData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Consulta_Lote");
-                XLSX.writeFile(wb, `Relatorio_Lote_Empresas.xlsx`);
-            }
-
-            function showAlert(msg, type) {
-                let icon = type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-xmark';
-                alertContainer.innerHTML = `<div class="alert alert-${type === 'warning' ? 'warning' : 'danger'} d-flex align-items-center gap-2" role="alert">
-                    <i class="fa-solid ${icon} fa-lg"></i>
-                    <div>${msg}</div>
-                </div>`;
-            }
-
-            function limparTela() {
-                inputCnpj.value = '';
-                resultContainer.classList.add('d-none');
-                alertContainer.innerHTML = '';
-                currentCompanyData = null;
-                inputCnpj.focus();
-            }
-
-            function saveToHistory(cnpj, razao) {
-                let history = JSON.parse(localStorage.getItem('cnpjHistory')) || [];
-                history = history.filter(item => item.cnpj !== Utils.formatCNPJ(cnpj));
-                history.unshift({ cnpj: Utils.formatCNPJ(cnpj), razao: (razao || '').substring(0, 25) + '...' });
-                if (history.length > 5) history.pop();
-                localStorage.setItem('cnpjHistory', JSON.stringify(history));
-                renderHistory();
-            }
-
-            function renderHistory() {
-                const container = document.getElementById('historyPills');
-                let history = JSON.parse(localStorage.getItem('cnpjHistory')) || [];
-                
-                if (history.length === 0) {
-                    container.innerHTML = '<small class="text-muted">Nenhum histórico recente.</small>';
-                    return;
-                }
-
-                container.innerHTML = '';
-                history.forEach(item => {
-                    const badge = document.createElement('span');
-                    badge.className = 'badge bg-secondary me-2 p-2 mb-1';
-                    badge.style.cursor = 'pointer';
-                    badge.textContent = item.cnpj;
-                    badge.title = item.razao;
-                    badge.onclick = () => {
-                        inputCnpj.value = item.cnpj;
-                        realizarConsulta();
-                    };
-                    container.appendChild(badge);
-                });
-            }
-
-            function copiarDados() {
-                if (!currentCompanyData) return;
-                const texto = `CNPJ: ${Utils.formatCNPJ(currentCompanyData.cnpj)}\nRazão Social: ${currentCompanyData.razao_social}\nSituação: ${currentCompanyData.descricao_situacao_cadastral}\nEndereço: ${currentCompanyData.logradouro}, ${currentCompanyData.numero} - ${currentCompanyData.bairro}, ${currentCompanyData.municipio}/${currentCompanyData.uf}\nAtividade Principal: ${currentCompanyData.cnae_fiscal_descricao}`;
-                navigator.clipboard.writeText(texto).then(() => {
-                    alert('Dados copiados para a área de transferência!');
-                });
-            }
-
-            function exportarPDF() {
-                const element = document.getElementById('fichaEmpresa');
-                const opt = {
-                    margin: 0.5,
-                    filename: `Ficha_${currentCompanyData.cnpj}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-                };
-                html2pdf().set(opt).from(element).save();
-            }
-
-            function exportarExcel() {
-                if (!currentCompanyData) return;
-                const flatData = [{
-                    CNPJ: Utils.formatCNPJ(currentCompanyData.cnpj),
-                    Razao_Social: currentCompanyData.razao_social,
-                    Nome_Fantasia: currentCompanyData.nome_fantasia,
-                    Situacao: currentCompanyData.descricao_situacao_cadastral,
-                    Data_Abertura: Utils.formatDate(currentCompanyData.data_inicio_atividade),
-                    Natureza: currentCompanyData.natureza_juridica,
-                    Porte: currentCompanyData.porte,
-                    CNAE_Principal: `${currentCompanyData.cnae_fiscal} - ${currentCompanyData.cnae_fiscal_descricao}`,
-                    Endereco: `${currentCompanyData.logradouro}, ${currentCompanyData.numero} - ${currentCompanyData.municipio}/${currentCompanyData.uf}`,
-                    Telefone: currentCompanyData.ddd_telefone_1,
-                    Email: currentCompanyData.email
-                }];
-                const ws = XLSX.utils.json_to_sheet(flatData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Empresa");
-                XLSX.writeFile(wb, `Dados_${currentCompanyData.cnpj}.xlsx`);
-            }
+            };
         });
     </script>
 </body>
