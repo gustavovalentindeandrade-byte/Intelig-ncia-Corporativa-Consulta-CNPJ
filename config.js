@@ -1,9 +1,0 @@
-export const CONFIG = {
-    SUPABASE_URL: 'https://avimtkqdcmdnvkvllnpq.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aW10a3FkY21kbnZrdmxsbnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzI4NjAsImV4cCI6MjEwMTUwODg2MH0.-dm77ElvB7_HogpTY0ZF2_xWKYqYFfYWA55zDWoWSn4',
-    TIMEOUT_MS: 10000,
-    MAX_RETRIES: 3,
-    RETRY_BACKOFF_BASE_MS: 1000,
-    CACHE_TTL_MS: 1000 * 60 * 60 * 24, // 24 horas
-    BATCH_CONCURRENCY_LIMIT: 5
-};
