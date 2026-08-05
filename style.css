@@ -1,0 +1,55 @@
+:root {
+    --primary-blue: #003B7A;
+    --primary-blue-hover: #002D5E;
+    --bg-page: #F4F6F8;
+    --text-dark: #1F2937;
+    --success-color: #10B981;
+    --danger-color: #EF4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.cursor-pointer:hover {
+    opacity: 0.8;
+}
+
+.badge-industrial-yes {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #10b981;
+}
+
+.badge-industrial-no {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #ef4444;
+}
+
+@media print {
+    .print-hide {
+        display: none !important;
+    }
+    body {
+        background-color: #fff;
+    }
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
