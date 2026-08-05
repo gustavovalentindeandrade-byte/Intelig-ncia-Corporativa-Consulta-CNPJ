@@ -13,7 +13,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://avimtkqdcmdnvkvllnpq.supabase.co';
-        // CORREÇÃO: Chave agora está entre aspas simples ('...')
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aW10a3FkY21kbnZrdmxsbnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzI4NjAsImV4cCI6MjEwMTUwODg2MH0.-dm77ElvB7_HogpTY0ZF2_xWKYqYFfYWA55zDWoWSn4';
         
         let supabase = null;
@@ -26,48 +25,14 @@
     <style>
         :root {
             --primary-blue: #003B7A;
-            --primary-blue-hover: #002D5E;
-            --primary-blue-light: #E6F0FA;
             --bg-page: #F4F6F8;
-            --white: #FFFFFF;
             --text-dark: #1F2937;
-            --text-muted: #6B7280;
-            --text-light: #9CA3AF;
-            --success: #10B981;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --info: #3B82F6;
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-            --border-radius-md: 8px;
-            --border-radius-lg: 12px;
-            --border-light: 1px solid rgba(0, 0, 0, 0.06);
-            --transition-fast: 0.2s ease-in-out;
-            --transition-normal: 0.3s ease;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-dark);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", Arial, sans-serif; background-color: var(--bg-page); color: var(--text-dark); line-height: 1.6; }
         .cursor-pointer { cursor: pointer; transition: 0.2s; }
         .cursor-pointer:hover { opacity: 0.8; }
-
-        @media print {
-            .print-hide { display: none !important; }
-            body { background-color: #fff; }
-        }
+        @media print { .print-hide { display: none !important; } body { background-color: #fff; } }
     </style>
 </head>
 <body class="bg-light">
@@ -75,9 +40,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm print-hide">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fa-solid fa-building mx-2"></i> Inteligência Corporativa | Consulta CNPJ
-            </a>
+            <a class="navbar-brand" href="#"><i class="fa-solid fa-building mx-2"></i> Inteligência Corporativa | Consulta CNPJ</a>
         </div>
     </nav>
 
@@ -86,12 +49,8 @@
         <div class="row mb-3 print-hide">
             <div class="col-12">
                 <div class="btn-group w-100 shadow-sm" role="group">
-                    <button type="button" class="btn btn-primary active py-2" id="tabIndividual">
-                        <i class="fa-solid fa-magnifying-glass me-2"></i> Consulta Individual
-                    </button>
-                    <button type="button" class="btn btn-outline-primary py-2" id="tabLote">
-                        <i class="fa-solid fa-list-check me-2"></i> Consulta em Lote (Múltiplos CNPJs)
-                    </button>
+                    <button type="button" class="btn btn-primary active py-2" id="tabIndividual"><i class="fa-solid fa-magnifying-glass me-2"></i> Consulta Individual</button>
+                    <button type="button" class="btn btn-outline-primary py-2" id="tabLote"><i class="fa-solid fa-list-check me-2"></i> Consulta em Lote (Múltiplos CNPJs)</button>
                 </div>
             </div>
         </div>
@@ -118,31 +77,28 @@
                     
                     <div class="mt-3" id="historyContainer">
                         <small class="text-muted d-block mb-2">Últimas consultas no Banco de Dados:</small>
-                        <div id="historyPills" class="d-flex flex-wrap gap-2">
-                            <small class="text-muted fst-italic" id="historyLoading">Carregando histórico...</small>
-                        </div>
+                        <div id="historyPills" class="d-flex flex-wrap gap-2"><small class="text-muted fst-italic" id="historyLoading">Carregando histórico...</small></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Indicador de Carregamento Individual -->
             <div id="loadingIndicator" class="text-center my-5 d-none print-hide">
                 <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-                <p class="mt-2 text-muted">Buscando informações na base de dados...</p>
+                <p class="mt-2 text-muted">Buscando informações. Negociando com o firewall...</p>
             </div>
 
-            <!-- Resultados da Consulta Individual -->
+            <!-- Resultados -->
             <div id="resultContainer" class="d-none">
                 <div class="d-flex flex-wrap gap-2 justify-content-end mb-3 print-hide">
                     <button class="btn btn-outline-secondary btn-sm" id="btnCopiar"><i class="fa-regular fa-copy"></i> Copiar Dados</button>
                     <button class="btn btn-outline-danger btn-sm" id="btnPDF"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
                     <button class="btn btn-outline-success btn-sm" id="btnExcel"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
-                    <button class="btn btn-outline-dark btn-sm" id="btnImprimir"><i class="fa-solid fa-print"></i> Imprimir Ficha</button>
+                    <button class="btn btn-outline-dark btn-sm" id="btnImprimir"><i class="fa-solid fa-print"></i> Imprimir</button>
                     <button class="btn btn-outline-warning btn-sm" id="btnLimpar"><i class="fa-solid fa-eraser"></i> Limpar</button>
                 </div>
 
                 <div id="fichaEmpresa">
-                    <div class="alert alert-info shadow-sm mb-4" role="alert">
+                    <div class="alert alert-info shadow-sm mb-4">
                         <h5 class="alert-heading"><i class="fa-solid fa-robot"></i> Resumo Inteligente</h5>
                         <p class="mb-0" id="resumoTexto"></p>
                     </div>
@@ -150,23 +106,12 @@
                     <div class="row g-4">
                         <div class="col-12">
                             <div class="card shadow-sm border-primary h-100">
-                                <div class="card-header bg-primary text-white font-weight-bold">
-                                    <i class="fa-solid fa-sitemap"></i> Classificação Interna
-                                </div>
+                                <div class="card-header bg-primary text-white font-weight-bold"><i class="fa-solid fa-sitemap"></i> Classificação Interna</div>
                                 <div class="card-body">
                                     <div class="row text-center">
-                                        <div class="col-md-4 mb-2 mb-md-0 border-end">
-                                            <small class="text-muted text-uppercase">Perfil da Empresa</small>
-                                            <h5 id="valPerfil" class="text-primary fw-bold mt-1">-</h5>
-                                        </div>
-                                        <div class="col-md-4 mb-2 mb-md-0 border-end">
-                                            <small class="text-muted text-uppercase">Macro Setor</small>
-                                            <h5 id="valMacroSetor" class="text-primary fw-bold mt-1">-</h5>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small class="text-muted text-uppercase">Carteira</small>
-                                            <h5 id="valCarteira" class="fw-bold mt-1">-</h5>
-                                        </div>
+                                        <div class="col-md-4 mb-2 mb-md-0 border-end"><small class="text-muted text-uppercase">Perfil da Empresa</small><h5 id="valPerfil" class="text-primary fw-bold mt-1">-</h5></div>
+                                        <div class="col-md-4 mb-2 mb-md-0 border-end"><small class="text-muted text-uppercase">Macro Setor</small><h5 id="valMacroSetor" class="text-primary fw-bold mt-1">-</h5></div>
+                                        <div class="col-md-4"><small class="text-muted text-uppercase">Carteira</small><h5 id="valCarteira" class="fw-bold mt-1">-</h5></div>
                                     </div>
                                 </div>
                             </div>
@@ -179,9 +124,9 @@
                                     <li class="list-group-item"><strong>Razão Social:</strong> <span id="valRazaoSocial"></span></li>
                                     <li class="list-group-item"><strong>Nome Fantasia:</strong> <span id="valNomeFantasia"></span></li>
                                     <li class="list-group-item"><strong>CNPJ:</strong> <span id="valCnpj"></span></li>
-                                    <li class="list-group-item"><strong>Situação Cadastral:</strong> <span id="valSituacao"></span></li>
-                                    <li class="list-group-item"><strong>Data de Abertura:</strong> <span id="valAbertura"></span></li>
-                                    <li class="list-group-item"><strong>Natureza Jurídica:</strong> <span id="valNatureza"></span></li>
+                                    <li class="list-group-item"><strong>Situação:</strong> <span id="valSituacao"></span></li>
+                                    <li class="list-group-item"><strong>Abertura:</strong> <span id="valAbertura"></span></li>
+                                    <li class="list-group-item"><strong>Natureza:</strong> <span id="valNatureza"></span></li>
                                     <li class="list-group-item"><strong>Porte:</strong> <span id="valPorte"></span></li>
                                     <li class="list-group-item"><strong>Capital Social:</strong> <span id="valCapital"></span></li>
                                 </ul>
@@ -207,11 +152,8 @@
                             <div class="card shadow-sm">
                                 <div class="card-header bg-light"><i class="fa-solid fa-industry"></i> Atividades Econômicas (CNAE)</div>
                                 <div class="card-body">
-                                    <h6 class="text-primary">Atividade Principal</h6>
-                                    <p class="mb-4" id="valCnaePrincipal"></p>
-                                    
-                                    <h6 class="text-secondary">Atividades Secundárias</h6>
-                                    <ul id="listCnaeSecundario" class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;"></ul>
+                                    <h6 class="text-primary">Atividade Principal</h6><p class="mb-4" id="valCnaePrincipal"></p>
+                                    <h6 class="text-secondary">Atividades Secundárias</h6><ul id="listCnaeSecundario" class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;"></ul>
                                 </div>
                             </div>
                         </div>
@@ -220,47 +162,26 @@
             </div>
         </div>
 
-        <!-- Área de Consulta em Lote -->
+        <!-- Área de Lote -->
         <div id="batchSection" class="d-none">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="card-title mb-3"><i class="fa-solid fa-list-check text-primary"></i> Processamento de Lista de CNPJs</h5>
-                    <p class="text-muted small">Cole abaixo uma lista contendo múltiplos CNPJs (um por linha, ou separados por vírgula/ponto e vírgula):</p>
-                    <div class="mb-3">
-                        <textarea id="batchInput" class="form-control font-monospace" rows="6" placeholder="00000000000100&#10;11.111.111/0001-11&#10;22222222000122"></textarea>
-                    </div>
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-list-check text-primary"></i> Processamento de Lote</h5>
+                    <textarea id="batchInput" class="form-control font-monospace mb-3" rows="6" placeholder="Cole os CNPJs aqui..."></textarea>
                     <div class="d-flex flex-wrap gap-3 align-items-center">
-                        <button class="btn btn-primary px-4" id="btnProcessarLote">
-                            <i class="fa-solid fa-gears"></i> Processar Lote
-                        </button>
-                        <button class="btn btn-success d-none" id="btnExportarLoteExcel">
-                            <i class="fa-solid fa-file-excel"></i> Exportar Resultado para Excel
-                        </button>
+                        <button class="btn btn-primary px-4" id="btnProcessarLote"><i class="fa-solid fa-gears"></i> Processar Lote</button>
+                        <button class="btn btn-success d-none" id="btnExportarLoteExcel"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
                         <span id="batchProgress" class="fw-bold text-primary"></span>
                     </div>
                 </div>
             </div>
-
-            <!-- Tabela de Resultados do Lote -->
             <div id="batchResultContainer" class="card shadow-sm d-none mb-4">
-                <div class="card-header bg-dark text-white"><i class="fa-solid fa-table"></i> Resultados Consolidados do Lote</div>
+                <div class="card-header bg-dark text-white"><i class="fa-solid fa-table"></i> Resultados</div>
                 <div class="card-body p-0">
                     <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                         <table class="table table-striped table-hover align-middle mb-0" id="batchTable">
-                            <thead class="table-light sticky-top">
-                                <tr>
-                                    <th>CNPJ</th>
-                                    <th>Razão Social</th>
-                                    <th>Porte</th>
-                                    <th>Perfil</th>
-                                    <th>Macro Setor</th>
-                                    <th>Carteira</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Preenchido dinamicamente via JS -->
-                            </tbody>
+                            <thead class="table-light sticky-top"><tr><th>CNPJ</th><th>Razão Social</th><th>Porte</th><th>Perfil</th><th>Macro Setor</th><th>Status</th></tr></thead>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -268,12 +189,10 @@
         </div>
     </div>
 
-    <!-- Bibliotecas Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
-        // Restauração das Funções de Banco de Dados
         const Database = {
             async salvarConsulta(empresa, classificacao) {
                 if (!supabase) return;
@@ -286,391 +205,199 @@
                         macro_setor: classificacao.macroSetor,
                         carteira: classificacao.carteira
                     }, { onConflict: 'cnpj' });
-
                     if (!error) this.carregarHistorico();
-                } catch (err) {
-                    console.error("Erro ao salvar:", err);
-                }
+                } catch (err) { console.error(err); }
             },
             async carregarHistorico() {
-                if (!supabase) {
-                    document.getElementById('historyLoading').textContent = "Supabase offline.";
-                    return;
-                }
+                if (!supabase) return;
                 try {
-                    const { data, error } = await supabase
-                        .from('consultas_historico')
-                        .select('cnpj, razao_social')
-                        .order('criado_em', { ascending: false })
-                        .limit(8);
-
+                    const { data, error } = await supabase.from('consultas_historico').select('cnpj, razao_social').order('criado_em', { ascending: false }).limit(8);
                     if (error) throw error;
-
                     const container = document.getElementById('historyPills');
                     if (data && data.length > 0) {
-                        container.innerHTML = data.map(d => 
-                            `<span class="badge bg-secondary cursor-pointer" onclick="document.getElementById('cnpjInput').value='${Utils.formatCNPJ(d.cnpj)}'; document.getElementById('btnConsultar').click()">${Utils.formatCNPJ(d.cnpj)}</span>`
-                        ).join('');
+                        container.innerHTML = data.map(d => `<span class="badge bg-secondary cursor-pointer" onclick="document.getElementById('cnpjInput').value='${Utils.formatCNPJ(d.cnpj)}'; document.getElementById('btnConsultar').click()">${Utils.formatCNPJ(d.cnpj)}</span>`).join('');
                     } else {
                         container.innerHTML = '<small class="text-muted">Nenhum histórico.</small>';
                     }
-                } catch (err) {
-                    document.getElementById('historyLoading').textContent = "Erro ao carregar.";
-                }
+                } catch (err) { document.getElementById('historyLoading').textContent = "Erro ao carregar banco."; }
             }
         };
 
         const Utils = {
-            formatCNPJ(value) {
-                if (!value) return '';
-                return value.replace(/\D/g, '').replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2').substr(0, 18);
-            },
-            cleanCNPJ(value) {
-                if (!value) return '';
-                return value.toString().replace(/\D/g, '');
-            },
-            isValidCNPJ(cnpj) {
-                cnpj = this.cleanCNPJ(cnpj);
-                if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
-                let tamanho = cnpj.length - 2;
-                let numeros = cnpj.substring(0, tamanho);
-                let digitos = cnpj.substring(tamanho);
-                let soma = 0, pos = tamanho - 7;
-                for (let i = tamanho; i >= 1; i--) { soma += numeros.charAt(tamanho - i) * pos--; if (pos < 2) pos = 9; }
-                let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-                if (resultado != digitos.charAt(0)) return false;
-                tamanho = tamanho + 1; numeros = cnpj.substring(0, tamanho); soma = 0; pos = tamanho - 7;
-                for (let i = tamanho; i >= 1; i--) { soma += numeros.charAt(tamanho - i) * pos--; if (pos < 2) pos = 9; }
-                resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-                if (resultado != digitos.charAt(1)) return false;
+            formatCNPJ(v) { if(!v) return ''; return v.replace(/\D/g, '').replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2').substr(0, 18); },
+            cleanCNPJ(v) { if(!v) return ''; return v.toString().replace(/\D/g, ''); },
+            isValidCNPJ(c) {
+                c = this.cleanCNPJ(c);
+                if (c.length !== 14 || /^(\d)\1+$/.test(c)) return false;
+                let t = 12, n = c.substring(0, t), d = c.substring(t), s = 0, p = t - 7;
+                for (let i = t; i >= 1; i--) { s += n.charAt(t - i) * p--; if (p < 2) p = 9; }
+                let r = s % 11 < 2 ? 0 : 11 - s % 11; if (r != d.charAt(0)) return false;
+                t = 13; n = c.substring(0, t); s = 0; p = t - 7;
+                for (let i = t; i >= 1; i--) { s += n.charAt(t - i) * p--; if (p < 2) p = 9; }
+                r = s % 11 < 2 ? 0 : 11 - s % 11; if (r != d.charAt(1)) return false;
                 return true;
             },
-            formatDate(dateString) {
-                if (!dateString) return 'Não informada';
-                const parts = dateString.split('-');
-                return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateString;
-            },
-            formatCurrency(value) {
-                if (value === null || value === undefined) return 'Não informado';
-                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-            }
+            formatDate(d) { if(!d) return '-'; const p = d.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d; },
+            formatCurrency(v) { if(v == null) return '-'; return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v); }
         };
 
-        // API Inteligente: Tenta acesso direto, se bloquear por CORS, usa proxy rápido!
+        // ==========================================
+        // SISTEMA DE FETCH COM 3 CAMADAS (ANTI-FIREWALL)
+        // ==========================================
         const API = {
             async consultarCNPJ(cnpj) {
                 const cnpjLimpo = Utils.cleanCNPJ(cnpj);
                 const urlDireta = `https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`;
                 
                 try {
-                    // 1. Tenta acesso ultra rápido
+                    // CAMADA 1: Acesso direto
                     const response = await fetch(urlDireta);
-                    if (!response.ok) {
-                        if (response.status === 404) throw new Error("CNPJ não encontrado.");
-                        throw new Error("Erro na API.");
-                    }
+                    if (response.status === 404) throw new Error("CNPJ_NAO_ENCONTRADO");
+                    if (!response.ok) throw new Error("BLOQUEIO_REDE");
                     return await response.json();
                 } catch (error) {
-                    // 2. Se a rede bloquear o Fetch (CORS), aciona o proxy alternativo (CorsProxy.io)
-                    if (error.message === "Failed to fetch" || error.name === "TypeError") {
-                        const urlProxy = `https://corsproxy.io/?${encodeURIComponent(urlDireta)}`;
-                        const responseProxy = await fetch(urlProxy);
-                        if (!responseProxy.ok) throw new Error("Erro ao buscar dados (Proxy).");
-                        return await responseProxy.json();
+                    if (error.message === "CNPJ_NAO_ENCONTRADO") throw new Error("CNPJ não encontrado na base nacional.");
+
+                    // CAMADA 2: Proxy alternativo leve (CodeTabs)
+                    try {
+                        const urlProxy1 = `https://api.codetabs.com/v1/proxy?quest=${urlDireta}`;
+                        const resProxy1 = await fetch(urlProxy1);
+                        if (!resProxy1.ok) throw new Error("FALHA_PROXY_1");
+                        return await resProxy1.json();
+                    } catch (errProxy1) {
+                        
+                        // CAMADA 3: Proxy robusto final (AllOrigins)
+                        try {
+                            const urlProxy2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(urlDireta)}`;
+                            const resProxy2 = await fetch(urlProxy2);
+                            if (!resProxy2.ok) throw new Error("FALHA_PROXY_2");
+                            return await resProxy2.json();
+                        } catch (errProxy2) {
+                            throw new Error("Bloqueio de Firewall Corporativo: A sua rede atual bloqueou todas as tentativas de consulta externa. Roteie a internet do celular e tente novamente para confirmar.");
+                        }
                     }
-                    throw error;
                 }
             }
         };
 
         const TabelaClassificacao = {
-            "NAO_INDUSTRIAL": { carteira: "-", macroSetor: "CNAE não industrial e não relacionado" },
-            "P_D": { carteira: "-", macroSetor: "Pesquisa e Desenvolvimento (P&D)" },
-            "DIVERSOS_OUTROS": { carteira: "-", macroSetor: "Diversos (Outros)" },
-            "ALIMENTACAO_ANIMAL": { carteira: "Alimentação Animal", macroSetor: "Alimentação Animal" },
-            "ALIMENTOS_BEBIDAS": { carteira: "Alimentos e Bebidas", macroSetor: "Alimentos e Bebidas" },
-            "ARTEFATOS_PAPEL": { carteira: "Artefatos de Papel", macroSetor: "Papel e Papelão" },
-            "BORRACHA": { carteira: "Borracha", macroSetor: "Borracha e Plástico (Borracha)" },
-            "CONSTRUCAO_CIVIL": { carteira: "Construção Civil", macroSetor: "Construção Pesada e Civil" },
-            "CONSTRUCAO_NAVAL": { carteira: "Construção Naval", macroSetor: "Naval" },
-            "EDITORIAL_GRAFICO": { carteira: "Editorial | Gráfico", macroSetor: "Editorial e Gráfica" },
-            "ENERGIA": { carteira: "Energia", macroSetor: "SIUP" },
-            "EXTRATIVISTA": { carteira: "Extrativista", macroSetor: "Extrativista" },
-            "INDUSTRIA_ACO": { carteira: "Indústria do Aço", macroSetor: "Siderurgia e Metalurgia" },
-            "MADEIRA_MOBILIARIO": { carteira: "Madeira e Mobiliário", macroSetor: "Madeira e Mobiliário" },
-            "METAL_MECANICO": { carteira: "Metal Mecânico", macroSetor: "Metal Mecânico" },
-            "PANIFICACAO": { carteira: "Panificação", macroSetor: "Alimentos e Bebidas" },
-            "PAPEL": { carteira: "Papel", macroSetor: "Papel e Papelão" },
-            "PLASTICO": { carteira: "Plástico", macroSetor: "Borracha e Plástico (Plástico)" },
-            "REFRATARIO": { carteira: "Refratário", macroSetor: "Minerais não Metálicos" },
-            "REFRIGERACAO_AR": { carteira: "Refrigeração de Ar", macroSetor: "SIUP" },
-            "VIDRO": { carteira: "Vidro", macroSetor: "Minerais não Metálicos (Vidro)" },
-            "SERVICOS_COMPLEMENTARES": { carteira: "-", macroSetor: "Diversos (Serviços Complementares)" },
-            "AUDIOVISUAL": { carteira: "Audiovisual", macroSetor: "Audiovisual" },
+            "TIC": { carteira: "TIC", macroSetor: "TIC" },
             "AUTOMOTIVO": { carteira: "Automotivo", macroSetor: "Indústria de Transportes" },
             "CADEIA_MODA": { carteira: "Cadeia da Moda", macroSetor: "Moda" },
-            "COSMETICO": { carteira: "Cosmético", macroSetor: "Químicos" },
-            "FARMACEUTICO": { carteira: "Farmacêutico", macroSetor: "Químicos" },
-            "FOSFORO": { carteira: "Fósforo", macroSetor: "Químicos" },
-            "INDUSTRIA_DEFESA": { carteira: "Indústria de Defesa", macroSetor: "Indústria de Defesa" },
-            "LAVANDERIA": { carteira: "Lavanderia", macroSetor: "Químicos" },
-            "QUIMICO": { carteira: "Químico", macroSetor: "Químicos" },
-            "REPARACAO": { carteira: "Reparação", macroSetor: "Indústria de Transportes" },
-            "SAUDE_ANIMAL": { carteira: "Saúde Animal", macroSetor: "Saúde Animal" },
-            "TABACO": { carteira: "Tabaco", macroSetor: "Diversos (Fumo)" },
-            "TIC": { carteira: "TIC", macroSetor: "TIC" },
-            "VELAS_SABAO": { carteira: "Velas e Sabão", macroSetor: "Químicos" }
-        };
-
-        const CnaeDicionario = {
-            "1011201": "ALIMENTOS_BEBIDAS", "2910701": "AUTOMOTIVO",
-            "4120400": "CONSTRUCAO_CIVIL", "6204000": "TIC", "1412601": "CADEIA_MODA"
+            "ALIMENTOS_BEBIDAS": { carteira: "Alimentos e Bebidas", macroSetor: "Alimentos e Bebidas" },
+            "CONSTRUCAO_CIVIL": { carteira: "Construção Civil", macroSetor: "Construção Pesada e Civil" },
+            "METAL_MECANICO": { carteira: "Metal Mecânico", macroSetor: "Metal Mecânico" },
+            "SERVICOS_COMPLEMENTARES": { carteira: "-", macroSetor: "Diversos (Serviços Complementares)" },
+            "NAO_INDUSTRIAL": { carteira: "-", macroSetor: "CNAE não industrial e não relacionado" },
+            "DIVERSOS_OUTROS": { carteira: "-", macroSetor: "Diversos (Outros)" }
         };
 
         const CnaeMapper = {
-            matchKeywords(descricao, palavras) { return palavras.some(p => descricao.includes(p)); },
-            avaliarSetor(codigoCnae, descricaoCnae) {
-                const codigoLimpo = (codigoCnae || "").toString().replace(/\D/g, ''); 
-                const desc = (descricaoCnae || "").toLowerCase();
-                if (CnaeDicionario[codigoLimpo]) return TabelaClassificacao[CnaeDicionario[codigoLimpo]];
-
-                if (this.matchKeywords(desc, ["software", "tecnologia", "informática", "computador", "internet", "dados", "sistema", "telecomunica"])) return TabelaClassificacao["TIC"];
-                if (this.matchKeywords(desc, ["automóve", "veículo", "carro", "moto", "caminhão", "reboque", "autopeças"])) return TabelaClassificacao["AUTOMOTIVO"];
-                if (this.matchKeywords(desc, ["vestuário", "roupa", "calçado", "têxtil", "tecido", "acessório", "moda", "malha", "costura"])) return TabelaClassificacao["CADEIA_MODA"];
-                if (this.matchKeywords(desc, ["audiovisual", "cinema", "vídeo", "televisão", "som", "música", "gravação", "filme"])) return TabelaClassificacao["AUDIOVISUAL"];
-                if (this.matchKeywords(desc, ["cosmético", "perfume", "higiene", "beleza"])) return TabelaClassificacao["COSMETICO"];
-                if (this.matchKeywords(desc, ["farmacêutico", "medicamento", "remédio", "fármaco"])) return TabelaClassificacao["FARMACEUTICO"];
-                if (this.matchKeywords(desc, ["lavanderia", "lavagem", "tingimento"])) return TabelaClassificacao["LAVANDERIA"];
-                if (this.matchKeywords(desc, ["químic", "tinta", "verniz", "fertilizante", "agrotóxico", "resina"])) return TabelaClassificacao["QUIMICO"];
-                if (this.matchKeywords(desc, ["reparação", "manutenção de veículos", "manutenção de máquinas"])) return TabelaClassificacao["REPARACAO"];
-                if (this.matchKeywords(desc, ["saúde animal", "veterinári", "defesa sanitária animal"])) return TabelaClassificacao["SAUDE_ANIMAL"];
-                if (this.matchKeywords(desc, ["defesa", "armamento", "bélico", "munição"])) return TabelaClassificacao["INDUSTRIA_DEFESA"];
-                if (this.matchKeywords(desc, ["fumo", "tabaco", "cigarro"])) return TabelaClassificacao["TABACO"];
-                if (this.matchKeywords(desc, ["vela", "sabão", "detergente"])) return TabelaClassificacao["VELAS_SABAO"];
-                if (this.matchKeywords(desc, ["fósforo"])) return TabelaClassificacao["FOSFORO"];
-
-                if (this.matchKeywords(desc, ["ração", "alimentação animal"])) return TabelaClassificacao["ALIMENTACAO_ANIMAL"];
-                if (this.matchKeywords(desc, ["alimento", "bebida", "carne", "laticínio", "fruta", "legume", "cereal", "açúcar"])) return TabelaClassificacao["ALIMENTOS_BEBIDAS"];
-                if (this.matchKeywords(desc, ["padaria", "panificação", "pão"])) return TabelaClassificacao["PANIFICACAO"];
-                if (this.matchKeywords(desc, ["construção", "obras", "edifício", "engenharia civil", "incorporação"])) return TabelaClassificacao["CONSTRUCAO_CIVIL"];
-                if (this.matchKeywords(desc, ["naval", "embarcação", "navio", "barco"])) return TabelaClassificacao["CONSTRUCAO_NAVAL"];
-                if (this.matchKeywords(desc, ["energia", "eletricidade", "gás", "geração de energia"])) return TabelaClassificacao["ENERGIA"];
-                if (this.matchKeywords(desc, ["refrigeração", "ar condicionado", "climatização"])) return TabelaClassificacao["REFRIGERACAO_AR"];
-                if (this.matchKeywords(desc, ["papel", "celulose", "embalagem de papel"])) return TabelaClassificacao["PAPEL"];
-                if (this.matchKeywords(desc, ["artefato de papel"])) return TabelaClassificacao["ARTEFATOS_PAPEL"];
-                if (this.matchKeywords(desc, ["borracha", "pneu"])) return TabelaClassificacao["BORRACHA"];
-                if (this.matchKeywords(desc, ["plástico", "pvc", "acrílico"])) return TabelaClassificacao["PLASTICO"];
-                if (this.matchKeywords(desc, ["aço", "siderurgia", "laminados de ferro"])) return TabelaClassificacao["INDUSTRIA_ACO"];
-                if (this.matchKeywords(desc, ["metal", "metalurgia", "máquina", "equipamento", "usinagem", "ferramenta"])) return TabelaClassificacao["METAL_MECANICO"];
-                if (this.matchKeywords(desc, ["madeira", "móvel", "móveis", "marcenaria", "serraria"])) return TabelaClassificacao["MADEIRA_MOBILIARIO"];
-                if (this.matchKeywords(desc, ["extração", "minério", "pedra", "areia", "carvão"])) return TabelaClassificacao["EXTRATIVISTA"];
-                if (this.matchKeywords(desc, ["edição", "livro", "jornal", "impressão", "gráfica"])) return TabelaClassificacao["EDITORIAL_GRAFICO"];
-                if (this.matchKeywords(desc, ["vidro", "cristal"])) return TabelaClassificacao["VIDRO"];
-                if (this.matchKeywords(desc, ["cerâmica", "refratário", "cimento", "gesso"])) return TabelaClassificacao["REFRATARIO"];
-                if (this.matchKeywords(desc, ["pesquisa", "desenvolvimento", "p&d"])) return TabelaClassificacao["P_D"];
-
-                if (this.matchKeywords(desc, ["serviço", "apoio", "limpeza", "conservação", "consultoria", "agência", "locação"])) return TabelaClassificacao["SERVICOS_COMPLEMENTARES"];
-                if (this.matchKeywords(desc, ["comércio", "varejista", "atacadista", "associação", "sindicato", "banco", "condomínio"])) return TabelaClassificacao["NAO_INDUSTRIAL"];
-
+            match(desc, p) { return p.some(w => desc.includes(w)); },
+            avaliar(cod, descStr) {
+                const desc = (descStr || "").toLowerCase();
+                if (this.match(desc, ["software", "tecnologia", "informática", "dados"])) return TabelaClassificacao["TIC"];
+                if (this.match(desc, ["automóve", "veículo", "carro", "autopeças"])) return TabelaClassificacao["AUTOMOTIVO"];
+                if (this.match(desc, ["vestuário", "roupa", "calçado", "moda"])) return TabelaClassificacao["CADEIA_MODA"];
+                if (this.match(desc, ["alimento", "bebida", "carne", "padaria", "pão"])) return TabelaClassificacao["ALIMENTOS_BEBIDAS"];
+                if (this.match(desc, ["construção", "obras", "engenharia civil"])) return TabelaClassificacao["CONSTRUCAO_CIVIL"];
+                if (this.match(desc, ["metal", "máquina", "usinagem", "ferramenta", "aço"])) return TabelaClassificacao["METAL_MECANICO"];
+                if (this.match(desc, ["comércio", "varejista", "atacadista", "associação", "banco"])) return TabelaClassificacao["NAO_INDUSTRIAL"];
+                if (this.match(desc, ["serviço", "apoio", "limpeza", "consultoria"])) return TabelaClassificacao["SERVICOS_COMPLEMENTARES"];
                 return TabelaClassificacao["DIVERSOS_OUTROS"];
             },
-            classificar(codigoCnae, descricaoCnae, porte, cnaesSecundarios = [], analisarSecundarios = true) {
-                let classif = { ...this.avaliarSetor(codigoCnae, descricaoCnae) };
-                let todosCnaes = [{ codigo: codigoCnae, descricao: descricaoCnae }];
-                if (analisarSecundarios && Array.isArray(cnaesSecundarios)) todosCnaes = todosCnaes.concat(cnaesSecundarios);
-                
-                const setoresNaoIndustriais = ["CNAE não industrial e não relacionado", "Diversos (Serviços Complementares)", "Diversos (Outros)"];
-                let temIndustria = false;
-                for (let cnae of todosCnaes) {
-                    if (!setoresNaoIndustriais.includes(this.avaliarSetor(cnae.codigo, cnae.descricao).macroSetor)) {
-                        temIndustria = true; break;
+            classificar(cod, desc, porte, sec, analise) {
+                let cl = { ...this.avaliar(cod, desc) };
+                let todos = [{ codigo: cod, descricao: desc }];
+                if (analise && Array.isArray(sec)) todos = todos.concat(sec);
+                let temInd = false;
+                for (let c of todos) {
+                    let a = this.avaliar(c.codigo, c.descricao);
+                    if (!["CNAE não industrial e não relacionado", "Diversos (Serviços Complementares)", "Diversos (Outros)"].includes(a.macroSetor)) {
+                        temInd = true; break;
                     }
                 }
-                classif.perfil = temIndustria ? "Indústria" : "Comércio / Serviços";
-                return classif;
+                cl.perfil = temInd ? "Indústria" : "Comércio / Serviços";
+                return cl;
             }
         };
 
-        let currentCompanyData = null;
-        let batchResultsData = [];
+        let currentData = null, batchData = [];
 
         document.addEventListener("DOMContentLoaded", () => {
             Database.carregarHistorico();
 
-            const inputCnpj = document.getElementById('cnpjInput');
-            const btnConsultar = document.getElementById('btnConsultar');
-            const resultContainer = document.getElementById('resultContainer');
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            const alertContainer = document.getElementById('alertContainer');
+            const inp = document.getElementById('cnpjInput'), btn = document.getElementById('btnConsultar');
+            const res = document.getElementById('resultContainer'), load = document.getElementById('loadingIndicator');
+            const alertCont = document.getElementById('alertContainer');
 
-            document.getElementById('tabIndividual').addEventListener('click', (e) => {
-                e.target.className = 'btn btn-primary active py-2';
-                document.getElementById('tabLote').className = 'btn btn-outline-primary py-2';
-                document.getElementById('individualSection').classList.remove('d-none');
-                document.getElementById('batchSection').classList.add('d-none');
-            });
+            document.getElementById('tabIndividual').onclick = (e) => { e.target.className='btn btn-primary active py-2'; document.getElementById('tabLote').className='btn btn-outline-primary py-2'; document.getElementById('individualSection').classList.remove('d-none'); document.getElementById('batchSection').classList.add('d-none'); };
+            document.getElementById('tabLote').onclick = (e) => { e.target.className='btn btn-primary active py-2'; document.getElementById('tabIndividual').className='btn btn-outline-primary py-2'; document.getElementById('batchSection').classList.remove('d-none'); document.getElementById('individualSection').classList.add('d-none'); };
 
-            document.getElementById('tabLote').addEventListener('click', (e) => {
-                e.target.className = 'btn btn-primary active py-2';
-                document.getElementById('tabIndividual').className = 'btn btn-outline-primary py-2';
-                document.getElementById('batchSection').classList.remove('d-none');
-                document.getElementById('individualSection').classList.add('d-none');
-            });
+            inp.oninput = e => e.target.value = Utils.formatCNPJ(e.target.value);
+            inp.onkeypress = e => { if (e.key === 'Enter') realizarConsulta(); };
+            btn.onclick = realizarConsulta;
 
-            inputCnpj.addEventListener('input', e => e.target.value = Utils.formatCNPJ(e.target.value));
-            inputCnpj.addEventListener('keypress', e => { if (e.key === 'Enter') realizarConsulta(); });
-            btnConsultar.addEventListener('click', realizarConsulta);
+            document.getElementById('btnLimpar').onclick = () => { inp.value = ''; res.classList.add('d-none'); alertCont.innerHTML=''; };
+            document.getElementById('btnCopiar').onclick = () => { if(currentData) navigator.clipboard.writeText(`CNPJ: ${Utils.formatCNPJ(currentData.cnpj)}\nRazão: ${currentData.razao_social}`).then(()=>alert('Copiado!')); };
+            document.getElementById('btnImprimir').onclick = () => window.print();
+            document.getElementById('btnPDF').onclick = () => html2pdf().set({ margin: 0.5, filename: `Ficha_${currentData.cnpj}.pdf` }).from(document.getElementById('fichaEmpresa')).save();
+            document.getElementById('btnExcel').onclick = () => { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([currentData]), "Empresa"); XLSX.writeFile(wb, `Dados_${currentData.cnpj}.xlsx`); };
 
-            document.getElementById('btnLimpar').addEventListener('click', () => { inputCnpj.value = ''; resultContainer.classList.add('d-none'); });
-            document.getElementById('btnCopiar').addEventListener('click', copiarDados);
-            document.getElementById('btnImprimir').addEventListener('click', () => window.print());
-            document.getElementById('btnPDF').addEventListener('click', exportarPDF);
-            document.getElementById('btnExcel').addEventListener('click', exportarExcel);
-
-            document.getElementById('btnProcessarLote').addEventListener('click', processarLoteCNPJs);
-            document.getElementById('btnExportarLoteExcel').addEventListener('click', exportarLoteExcel);
-
-            async function realizarConsulta() {
-                const cnpj = inputCnpj.value;
-                alertContainer.innerHTML = '';
-
-                if (!Utils.isValidCNPJ(cnpj)) {
-                    showAlert('CNPJ inválido.', 'warning');
-                    return;
-                }
-
-                resultContainer.classList.add('d-none');
-                loadingIndicator.classList.remove('d-none');
-                btnConsultar.disabled = true;
-
-                try {
-                    const dados = await API.consultarCNPJ(cnpj);
-                    currentCompanyData = dados;
-
-                    preencherDadosGerais(dados);
-                    preencherEndereco(dados);
-                    preencherCNAEs(dados);
-                    
-                    const classificacao = CnaeMapper.classificar(dados.cnae_fiscal, dados.cnae_fiscal_descricao, dados.porte, dados.cnaes_secundarios, document.getElementById('checkAnaliseSecundarios').checked);
-                    
-                    document.getElementById('valPerfil').textContent = classificacao.perfil;
-                    document.getElementById('valMacroSetor').textContent = classificacao.macroSetor;
-                    document.getElementById('valCarteira').textContent = classificacao.carteira;
-                    
-                    gerarResumoInteligente(dados, classificacao);
-                    
-                    Database.salvarConsulta(dados, classificacao);
-
-                    loadingIndicator.classList.add('d-none');
-                    resultContainer.classList.remove('d-none');
-                } catch (error) {
-                    loadingIndicator.classList.add('d-none');
-                    showAlert(error.message, 'error');
-                } finally {
-                    btnConsultar.disabled = false;
-                }
-            }
-
-            function preencherDadosGerais(d) {
-                document.getElementById('valRazaoSocial').textContent = d.razao_social;
-                document.getElementById('valNomeFantasia').textContent = d.nome_fantasia || '-';
-                document.getElementById('valCnpj').textContent = Utils.formatCNPJ(d.cnpj);
-                document.getElementById('valSituacao').textContent = d.descricao_situacao_cadastral;
-                document.getElementById('valAbertura').textContent = Utils.formatDate(d.data_inicio_atividade);
-                document.getElementById('valNatureza').textContent = d.natureza_juridica;
-                document.getElementById('valPorte').textContent = d.porte || '-';
-                document.getElementById('valCapital').textContent = Utils.formatCurrency(d.capital_social);
-            }
-
-            function preencherEndereco(d) {
-                document.getElementById('valLogradouro').textContent = d.logradouro || '';
-                document.getElementById('valNumero').textContent = d.numero || 'S/N';
-                document.getElementById('valComplemento').textContent = d.complemento || '-';
-                document.getElementById('valBairro').textContent = d.bairro;
-                document.getElementById('valCidadeUf').textContent = `${d.municipio} / ${d.uf}`;
-                document.getElementById('valCep').textContent = d.cep ? d.cep.toString().replace(/^(\d{5})(\d{3})$/, "$1-$2") : '';
-                document.getElementById('valTelefone').textContent = d.ddd_telefone_1 ? `(${d.ddd_telefone_1.substring(0,2)}) ${d.ddd_telefone_1.substring(2)}` : '-';
-                document.getElementById('valEmail').textContent = d.email || '-';
-            }
-
-            function preencherCNAEs(d) {
-                document.getElementById('valCnaePrincipal').textContent = `${d.cnae_fiscal} - ${d.cnae_fiscal_descricao}`;
-                const list = document.getElementById('listCnaeSecundario');
-                list.innerHTML = d.cnaes_secundarios && d.cnaes_secundarios.length > 0 ? 
-                    d.cnaes_secundarios.map(c => `<li class="list-group-item text-muted" style="font-size: 0.85rem;">${c.codigo} - ${c.descricao}</li>`).join('') : 
-                    '<li class="list-group-item text-muted">Nenhuma atividade secundária.</li>';
-            }
-
-            function gerarResumoInteligente(d, c) {
-                const porte = d.porte ? d.porte.toLowerCase() : 'indefinido';
-                const ano = d.data_inicio_atividade ? d.data_inicio_atividade.substring(0,4) : '-';
-                document.getElementById('resumoTexto').innerHTML = `A empresa <strong>${d.razao_social}</strong> é uma <strong>${c.perfil}</strong> no setor de <strong>${c.macroSetor}</strong>, possui porte <strong>${porte}</strong>, fundada em <strong>${ano}</strong> em <strong>${d.municipio}/${d.uf}</strong>.`;
-            }
-
-            async function processarLoteCNPJs() {
-                const rawText = document.getElementById('batchInput').value;
-                const progressSpan = document.getElementById('batchProgress');
-                const tbody = document.querySelector('#batchTable tbody');
-                let cnpjs = [...new Set(rawText.split(/[\n,;]+/).map(Utils.cleanCNPJ).filter(c => c.length > 0))];
+            document.getElementById('btnProcessarLote').onclick = async () => {
+                const txt = document.getElementById('batchInput').value, prog = document.getElementById('batchProgress');
+                let cnpjs = [...new Set(txt.split(/[\n,;]+/).map(Utils.cleanCNPJ).filter(c => c.length>0))];
+                if(cnpjs.length===0) return alert('Insira os CNPJs.');
                 
-                if (cnpjs.length === 0) return alert('Insira pelo menos um CNPJ.');
-
-                document.getElementById('btnProcessarLote').disabled = true;
-                document.getElementById('btnExportarLoteExcel').classList.add('d-none');
-                batchResultsData = [];
-                tbody.innerHTML = '';
+                document.getElementById('btnProcessarLote').disabled = true; document.getElementById('btnExportarLoteExcel').classList.add('d-none');
+                batchData = []; const tbody = document.querySelector('#batchTable tbody'); tbody.innerHTML = '';
                 document.getElementById('batchResultContainer').classList.remove('d-none');
 
-                for (let i = 0; i < cnpjs.length; i++) {
-                    progressSpan.textContent = `Processando ${i+1} de ${cnpjs.length}...`;
-                    let raw = cnpjs[i];
-                    let formatted = Utils.formatCNPJ(raw);
-                    let tr = document.createElement('tr');
-                    
+                for (let i=0; i<cnpjs.length; i++) {
+                    prog.textContent = `Processando ${i+1}/${cnpjs.length}...`;
+                    let raw = cnpjs[i], fmt = Utils.formatCNPJ(raw), tr = document.createElement('tr');
                     if (!Utils.isValidCNPJ(raw)) {
-                        tr.innerHTML = `<td>${formatted}</td><td colspan="5" class="text-danger">CNPJ Inválido</td><td><span class="badge bg-danger">Inválido</span></td>`;
+                        tr.innerHTML = `<td>${fmt}</td><td colspan="4" class="text-danger">Inválido</td><td><span class="badge bg-danger">Inválido</span></td>`;
                     } else {
                         try {
-                            await new Promise(r => setTimeout(r, 400)); // Delay para não travar API
                             const d = await API.consultarCNPJ(raw);
                             const c = CnaeMapper.classificar(d.cnae_fiscal, d.cnae_fiscal_descricao, d.porte, d.cnaes_secundarios, document.getElementById('checkAnaliseSecundarios').checked);
-                            tr.innerHTML = `<td>${formatted}</td><td>${d.razao_social||'-'}</td><td>${d.porte||'-'}</td><td><span class="badge bg-primary">${c.perfil}</span></td><td>${c.macroSetor}</td><td>${c.carteira}</td><td><span class="badge bg-success">Sucesso</span></td>`;
-                            
-                            batchResultsData.push({ CNPJ: formatted, Razao_Social: d.razao_social, Porte: d.porte, Perfil: c.perfil, Macro_Setor: c.macroSetor });
+                            tr.innerHTML = `<td>${fmt}</td><td>${d.razao_social||'-'}</td><td>${d.porte||'-'}</td><td><span class="badge bg-primary">${c.perfil}</span></td><td>${c.macroSetor}</td><td><span class="badge bg-success">OK</span></td>`;
+                            batchData.push({CNPJ: fmt, Razao: d.razao_social, Perfil: c.perfil, Setor: c.macroSetor});
                             Database.salvarConsulta(d, c);
                         } catch (err) {
-                            tr.innerHTML = `<td>${formatted}</td><td colspan="5" class="text-danger">${err.message}</td><td><span class="badge bg-danger">Erro</span></td>`;
+                            tr.innerHTML = `<td>${fmt}</td><td colspan="4" class="text-danger">${err.message}</td><td><span class="badge bg-danger">Erro</span></td>`;
                         }
                     }
                     tbody.appendChild(tr);
                 }
-                progressSpan.textContent = `Concluído!`;
-                document.getElementById('btnProcessarLote').disabled = false;
-                if(batchResultsData.length > 0) document.getElementById('btnExportarLoteExcel').classList.remove('d-none');
-            }
+                prog.textContent = `Concluído!`; document.getElementById('btnProcessarLote').disabled = false;
+                if(batchData.length>0) document.getElementById('btnExportarLoteExcel').classList.remove('d-none');
+            };
+            document.getElementById('btnExportarLoteExcel').onclick = () => { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(batchData), "Lote"); XLSX.writeFile(wb, `Lote.xlsx`); };
 
-            function exportarLoteExcel() {
-                const ws = XLSX.utils.json_to_sheet(batchResultsData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Lote");
-                XLSX.writeFile(wb, `Lote_Empresas.xlsx`);
+            async function realizarConsulta() {
+                alertCont.innerHTML = ''; if (!Utils.isValidCNPJ(inp.value)) return showAlert('CNPJ inválido.', 'warning');
+                res.classList.add('d-none'); load.classList.remove('d-none'); btn.disabled = true;
+                try {
+                    const d = await API.consultarCNPJ(inp.value); currentData = d;
+                    document.getElementById('valRazaoSocial').textContent = d.razao_social; document.getElementById('valCnpj').textContent = Utils.formatCNPJ(d.cnpj);
+                    document.getElementById('valSituacao').textContent = d.descricao_situacao_cadastral; document.getElementById('valPorte').textContent = d.porte || '-';
+                    document.getElementById('valLogradouro').textContent = d.logradouro || ''; document.getElementById('valBairro').textContent = d.bairro;
+                    document.getElementById('valCidadeUf').textContent = `${d.municipio} / ${d.uf}`;
+                    document.getElementById('valCnaePrincipal').textContent = `${d.cnae_fiscal} - ${d.cnae_fiscal_descricao}`;
+                    
+                    const list = document.getElementById('listCnaeSecundario');
+                    list.innerHTML = d.cnaes_secundarios && d.cnaes_secundarios.length>0 ? d.cnaes_secundarios.map(c=>`<li class="list-group-item text-muted" style="font-size: 0.85rem;">${c.codigo} - ${c.descricao}</li>`).join('') : '<li class="list-group-item text-muted">Nenhuma atividade secundária.</li>';
+                    
+                    const c = CnaeMapper.classificar(d.cnae_fiscal, d.cnae_fiscal_descricao, d.porte, d.cnaes_secundarios, document.getElementById('checkAnaliseSecundarios').checked);
+                    document.getElementById('valPerfil').textContent = c.perfil; document.getElementById('valMacroSetor').textContent = c.macroSetor; document.getElementById('valCarteira').textContent = c.carteira;
+                    document.getElementById('resumoTexto').innerHTML = `A empresa <strong>${d.razao_social}</strong> é uma <strong>${c.perfil}</strong> no setor de <strong>${c.macroSetor}</strong>, em <strong>${d.municipio}/${d.uf}</strong>.`;
+                    
+                    Database.salvarConsulta(d, c); load.classList.add('d-none'); res.classList.remove('d-none');
+                } catch (error) { load.classList.add('d-none'); showAlert(error.message, 'danger'); } finally { btn.disabled = false; }
             }
-
-            function showAlert(msg, type) {
-                alertContainer.innerHTML = `<div class="alert alert-${type === 'warning' ? 'warning' : 'danger'}"><i class="fa-solid fa-circle-exclamation"></i> ${msg}</div>`;
-            }
-
-            function copiarDados() {
-                if(!currentCompanyData) return;
-                navigator.clipboard.writeText(`CNPJ: ${Utils.formatCNPJ(currentCompanyData.cnpj)}\nRazão: ${currentCompanyData.razao_social}`).then(() => alert('Copiado!'));
-            }
-            function exportarPDF() { html2pdf().set({ margin: 0.5, filename: `Ficha_${currentCompanyData.cnpj}.pdf` }).from(document.getElementById('fichaEmpresa')).save(); }
-            function exportarExcel() {
-                const ws = XLSX.utils.json_to_sheet([{CNPJ: Utils.formatCNPJ(currentCompanyData.cnpj), Razao: currentCompanyData.razao_social}]);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Empresa");
-                XLSX.writeFile(wb, `Dados_${currentCompanyData.cnpj}.xlsx`);
-            }
+            function showAlert(msg, type) { alertCont.innerHTML = `<div class="alert alert-${type}"><i class="fa-solid fa-circle-exclamation"></i> ${msg}</div>`; }
         });
     </script>
 </body>
