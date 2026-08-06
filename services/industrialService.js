@@ -1,5 +1,6 @@
 import { Utils } from '../js/utils.js';
 import { ResultadoAnalise } from '../models/resultadoAnalise.js';
+import { Logger } from '../js/logger.js';
 
 // Base oficial restrita de Abrangência dos Sindicatos (Referência Interna Industrial)
 const BaseAbrangenciaSindicatos = new Set([
@@ -42,6 +43,9 @@ const BaseAbrangenciaSindicatos = new Set([
 ]);
 
 export const IndustrialService = {
+    // ------------------------------------------------------------------------
+    // MÉTODOS EXISTENTES SÍNCRONOS (NÃO ALTERADOS)
+    // ------------------------------------------------------------------------
     analisar(empresa, analisarSecundarias = true) {
         let listaCompletaAnalise = [];
 
@@ -120,5 +124,127 @@ export const IndustrialService = {
             cnaesIndustriaisLista: listaCodigosIndustriaisFormatados,
             todasAnalisadas: listaCompletaAnalise
         });
+    },
+
+    // ------------------------------------------------------------------------
+    // NOVO MÉTODO (EXCLUSIVO PARA BUSCAR CARTEIRAS E MACRO SETORES)
+    // ------------------------------------------------------------------------
+    async obterClassificacaoAvancada(empresa, analisarSecundarias = true, supabaseClient = null) {
+        let listaCompletaAnalise = [];
+
+        // Monta a lista completa de CNAEs
+        if (empresa.cnaePrincipalCod) {
+            listaCompletaAnalise.push({
+                codigo: empresa.cnaePrincipalCod,
+                descricao: empresa.cnaePrincipalDesc || "-",
+                tipo: "Principal"
+            });
+        }
+
+        if (analisarSecundarias && Array.isArray(empresa.cnaesSecundarios)) {
+            empresa.cnaesSecundarios.forEach(sec => {
+                listaCompletaAnalise.push({
+                    codigo: sec.codigo,
+                    descricao: sec.descricao || "-",
+                    tipo: "Secundária"
+                });
+            });
+        }
+
+        let analiseAvancada = {
+            empresaIndustrial: "NÃO",
+            totalCnaes: listaCompletaAnalise.length,
+            qtdIndustrial: 0,
+            qtdNaoIndustrial: 0,
+            carteiras: [],
+            macroSetores: [],
+            resultados: []
+        };
+
+        if (!supabaseClient || analiseAvancada.totalCnaes === 0) {
+            return analiseAvancada;
+        }
+
+        try {
+            // Normaliza para busca no banco (somente números)
+            const normalizarParaBusca = (cod) => cod ? String(cod).replace(/[^\d]/g, '') : '';
+            const codigosParaBusca = [...new Set(listaCompletaAnalise.map(c => normalizarParaBusca(c.codigo)).filter(c => c !== ''))];
+
+            const dbMap = new Map();
+
+            if (codigosParaBusca.length > 0) {
+                // Consulta Única e Otimizada
+                const { data, error } = await supabaseClient
+                    .from('cnaes_classificacao')
+                    .select('codigo, descricao, industrial, carteira, macro_setor')
+                    .in('codigo', codigosParaBusca);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        dbMap.set(String(item.codigo), item);
+                    });
+                }
+            }
+
+            let qtdInd = 0;
+            let qtdNaoInd = 0;
+            const setCarteiras = new Set();
+            const setMacroSetores = new Set();
+            const resultadosTabela = [];
+
+            // Cruzamento de dados em memória
+            listaCompletaAnalise.forEach(cnae => {
+                const codigoLimpo = normalizarParaBusca(cnae.codigo);
+                const matchDB = dbMap.get(codigoLimpo);
+
+                let isInd = false;
+                let cart = "-";
+                let macro = "CNAE não industrial e não relacionado";
+
+                if (matchDB) {
+                    isInd = matchDB.industrial === true || String(matchDB.industrial).toUpperCase() === 'SIM';
+                    if (isInd) {
+                        cart = matchDB.carteira || "-";
+                        macro = matchDB.macro_setor || "CNAE não industrial e não relacionado";
+                    }
+                }
+
+                if (isInd) {
+                    qtdInd++;
+                    if (cart !== "-") setCarteiras.add(cart);
+                    if (macro !== "CNAE não industrial e não relacionado") setMacroSetores.add(macro);
+                } else {
+                    qtdNaoInd++;
+                }
+
+                resultadosTabela.push({
+                    codigo: cnae.codigo,
+                    descricao: cnae.descricao || "-",
+                    principal: cnae.tipo === "Principal",
+                    industrial: isInd ? "SIM" : "NÃO",
+                    carteira: cart,
+                    macroSetor: macro
+                });
+            });
+
+            // Consolidação
+            analiseAvancada.empresaIndustrial = qtdInd > 0 ? "SIM" : "NÃO";
+            analiseAvancada.qtdIndustrial = qtdInd;
+            analiseAvancada.qtdNaoIndustrial = qtdNaoInd;
+            analiseAvancada.carteiras = Array.from(setCarteiras);
+            analiseAvancada.macroSetores = Array.from(setMacroSetores);
+            analiseAvancada.resultados = resultadosTabela;
+
+        } catch (error) {
+            if (typeof Logger !== 'undefined' && Logger.error) {
+                Logger.error("Erro ao classificar CNAEs via Supabase. Fallback aplicado.", error);
+            } else {
+                console.error("Erro ao classificar CNAEs via Supabase.", error);
+            }
+        }
+
+        return analiseAvancada;
     }
 };
