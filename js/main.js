@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById('btnExportarLoteExcel').addEventListener('click', () => ExportService.excelLote(batchResultsData));
 
-    async function realizarConsulta() {
+   async function realizarConsulta() {
         const cnpj = inputCnpj.value;
         UI.clearAlert();
 
@@ -135,6 +135,42 @@ document.addEventListener("DOMContentLoaded", async () => {
             UI.showAlert('CNPJ inválido estruturalmente. Verifique os dígitos.', 'warning');
             return;
         }
+
+        UI.toggleResult(false);
+        UI.toggleLoading(true);
+
+        try {
+            const empresa = await CnpjService.consultar(cnpj);
+            currentCompanyData = empresa;
+
+            const analisarSecundarias = document.getElementById('checkAnaliseSecundarios').checked;
+            
+            // 1. Chamada legada (síncrona) mantida intacta
+            const analise = IndustrialService.analisar(empresa, analisarSecundarias);
+            
+            // 2. NOVA CHAMADA: Busca os dados de Carteiras e Macro Setores no Supabase
+            const analiseAvancada = await IndustrialService.obterClassificacaoAvancada(empresa, analisarSecundarias, supabaseClient);
+            
+            // 3. Acopla os dados avançados ao objeto que já trafega pelo sistema
+            analise.analiseAvancada = analiseAvancada;
+
+            // Continua o fluxo normal do sistema
+            UI.renderFicha(empresa, analise);
+            await HistoryRepository.salvar(supabaseClient, empresa, analise);
+            
+            const novoHistorico = await HistoryRepository.carregar(supabaseClient);
+            UI.renderHistory(novoHistorico, (cnpjSel) => {
+                inputCnpj.value = Utils.formatCNPJ(cnpjSel);
+                realizarConsulta();
+            });
+
+            UI.toggleLoading(false);
+            UI.toggleResult(true);
+        } catch (error) {
+            UI.toggleLoading(false);
+            UI.showAlert(error.message, 'danger');
+        }
+    }
 
         UI.toggleResult(false);
         UI.toggleLoading(true);
