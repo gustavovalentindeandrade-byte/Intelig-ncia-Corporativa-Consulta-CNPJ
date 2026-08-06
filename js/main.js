@@ -13,6 +13,7 @@ if (window.supabase) {
 }
 
 let currentCompanyData = null;
+let currentAnaliseData = null;
 let batchResultsData = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -57,10 +58,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentCompanyData = null;
     });
 
-    document.getElementById('btnCopiar').addEventListener('click', () => ExportService.copiar(currentCompanyData));
+    document.getElementById('btnCopiar').addEventListener('click', () => ExportService.copiar(currentCompanyData, currentAnaliseData));
     document.getElementById('btnImprimir').addEventListener('click', () => ExportService.imprimir());
     document.getElementById('btnPDF').addEventListener('click', () => ExportService.pdf(currentCompanyData));
-    document.getElementById('btnExcel').addEventListener('click', () => ExportService.excelIndividual(currentCompanyData));
+    document.getElementById('btnExcel').addEventListener('click', () => ExportService.excelIndividual(currentCompanyData, currentAnaliseData));
 
     document.getElementById('btnProcessarLote').addEventListener('click', async () => {
         const rawText = document.getElementById('batchInput').value;
@@ -153,6 +154,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             // 3. Acopla os dados avançados ao objeto que já trafega pelo sistema
             analise.analiseAvancada = analiseAvancada;
+            currentAnaliseData = analise;
 
             // Continua o fluxo normal do sistema
             UI.renderFicha(empresa, analise);
