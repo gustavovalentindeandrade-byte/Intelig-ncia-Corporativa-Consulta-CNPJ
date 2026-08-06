@@ -29,9 +29,17 @@ export const BatchService = {
             } else {
                 try {
                     const empresa = await CnpjService.consultar(raw);
+                    
+                    // 1. Chamada legada (síncrona) mantida
                     const analise = IndustrialService.analisar(empresa, analisarSecundarias);
+                    
+                    // 2. NOVA CHAMADA: Busca os dados no Supabase para o lote
+                    const analiseAvancada = await IndustrialService.obterClassificacaoAvancada(empresa, analisarSecundarias, supabaseClient);
+                    analise.analiseAvancada = analiseAvancada;
+
                     const listaCnaesStr = analise.cnaesIndustriaisLista.length > 0 ? analise.cnaesIndustriaisLista.join(", ") : "-";
 
+                    // 3. Objeto enriquecido para o Excel (Novas colunas adicionadas ao final)
                     batchResultsData.push({
                         CNPJ: formatted,
                         Razao_Social: empresa.razaoSocial,
@@ -39,9 +47,15 @@ export const BatchService = {
                         Perfil: analise.perfil,
                         Municipio_UF: `${empresa.municipio}/${empresa.uf}`,
                         Possui_CNAE_Industrial: analise.possuiIndustrial ? "Sim" : "Não",
-                        CNAEs_Industriais_Encontradas: listaCnaesStr
+                        CNAEs_Industriais_Encontradas: listaCnaesStr,
+                        // Novas Colunas
+                        Empresa_Industrial: analiseAvancada.empresaIndustrial,
+                        Qtd_CNAEs: analiseAvancada.totalCnaes,
+                        Carteiras: analiseAvancada.carteiras.length > 0 ? analiseAvancada.carteiras.join(', ') : "-",
+                        Macro_Setores: analiseAvancada.macroSetores.length > 0 ? analiseAvancada.macroSetores.join(', ') : "-"
                     });
 
+                    // O histórico agora salvará o objeto `analise` completo, com a aba analiseAvancada acoplada
                     HistoryRepository.salvar(supabaseClient, empresa, analise);
                     onRowComplete(formatted, empresa, analise, 'Sucesso', null);
                 } catch (err) {
