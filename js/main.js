@@ -58,10 +58,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentCompanyData = null;
     });
 
-    document.getElementById('btnCopiar').addEventListener('click', () => ExportService.copiar(currentCompanyData, currentAnaliseData));
+    document.getElementById('btnCopiar').addEventListener('click', () => {
+        ExportService.copiar(currentCompanyData, currentAnaliseData);
+    });
     document.getElementById('btnImprimir').addEventListener('click', () => ExportService.imprimir());
-    document.getElementById('btnPDF').addEventListener('click', () => ExportService.pdf(currentCompanyData));
-    document.getElementById('btnExcel').addEventListener('click', () => ExportService.excelIndividual(currentCompanyData, currentAnaliseData));
+    document.getElementById('btnPDF').addEventListener('click', () => {
+        ExportService.pdf(currentCompanyData);
+    document.getElementById('btnExcel').addEventListener('click', () => {
+        ExportService.excelIndividual(currentCompanyData, currentAnaliseData);
+    });
 
     document.getElementById('btnProcessarLote').addEventListener('click', async () => {
         const rawText = document.getElementById('batchInput').value;
