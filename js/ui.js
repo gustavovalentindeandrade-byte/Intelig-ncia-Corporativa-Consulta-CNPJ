@@ -19,6 +19,7 @@ export const UI = {
     },
 
     renderFicha(empresa, analise) {
+        // --- PREENCHIMENTO LEGADO INTACTO ---
         document.getElementById('valRazaoSocial').textContent = empresa.razaoSocial || '-';
         document.getElementById('valNomeFantasia').textContent = empresa.nomeFantasia || 'Não informado';
         document.getElementById('valCnpj').textContent = Utils.formatCNPJ(empresa.cnpj);
@@ -63,6 +64,84 @@ export const UI = {
             `;
             tbody.appendChild(tr);
         });
+
+        // --- NOVA CHAMADA: INJEÇÃO DA TABELA DE CARTEIRAS ---
+        if (analise.analiseAvancada) {
+            this._renderAnaliseAvancada(analise.analiseAvancada);
+        }
+    },
+
+    // --- NOVO MÉTODO: GERAÇÃO DO CARD DE ANÁLISE AVANÇADA ---
+    _renderAnaliseAvancada(analiseAvancada) {
+        const resultContainer = document.getElementById('resultContainer');
+        if (!resultContainer) return;
+
+        // Evita duplicar se a seção já existir, apenas atualiza o conteúdo
+        let section = document.getElementById('secaoAnaliseIndustrialAvancada');
+        if (!section) {
+            section = document.createElement('div');
+            section.id = 'secaoAnaliseIndustrialAvancada';
+            section.className = 'card shadow-sm mb-4 mt-4 border-primary';
+            resultContainer.appendChild(section);
+        }
+
+        // Montagem das Linhas da Tabela
+        const trs = analiseAvancada.resultados.map(cnae => `
+            <tr>
+                <td class="font-monospace fw-bold">${cnae.codigo}</td>
+                <td class="small">${cnae.descricao}</td>
+                <td><span class="badge ${cnae.principal ? 'bg-primary' : 'bg-secondary'}">${cnae.principal ? 'Principal' : 'Secundária'}</span></td>
+                <td><span class="badge ${cnae.industrial === 'SIM' ? 'bg-success' : 'bg-light text-dark border'}">${cnae.industrial}</span></td>
+                <td>${cnae.carteira}</td>
+                <td>${cnae.macroSetor}</td>
+            </tr>
+        `).join('');
+
+        const formatarLista = (lista) => lista && lista.length > 0 ? lista.join(', ') : '-';
+
+        // Injeção do Layout Dinâmico
+        section.innerHTML = `
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fa-solid fa-industry me-2"></i> Análise de Carteiras e Macro Setores</h5>
+                <span class="badge bg-light text-dark">Total de Atividades: ${analiseAvancada.totalCnaes}</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive mb-4">
+                    <table class="table table-hover table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Descrição</th>
+                                <th>Tipo</th>
+                                <th>Industrial</th>
+                                <th>Carteira</th>
+                                <th>Macro Setor</th>
+                            </tr>
+                        </thead>
+                        <tbody>${trs}</tbody>
+                    </table>
+                </div>
+                
+                <div class="alert alert-secondary mb-0">
+                    <h6 class="alert-heading fw-bold mb-3 border-bottom pb-2">Resumo Consolidado</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><strong>Empresa Industrial:</strong> ${analiseAvancada.empresaIndustrial === 'SIM' ? '<span class="text-success fw-bold">SIM</span>' : '<span class="text-danger fw-bold">NÃO</span>'}</li>
+                                <li class="mb-2"><strong>CNAEs Industriais:</strong> ${analiseAvancada.qtdIndustrial}</li>
+                                <li class="mb-2"><strong>CNAEs Não Industriais:</strong> ${analiseAvancada.qtdNaoIndustrial}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><strong>Carteiras Identificadas:</strong> ${formatarLista(analiseAvancada.carteiras)}</li>
+                                <li class="mb-2"><strong>Macro Setores:</strong> ${formatarLista(analiseAvancada.macroSetores)}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
     },
 
     showAlert(message, type) {
