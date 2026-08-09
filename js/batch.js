@@ -55,8 +55,13 @@ export const BatchService = {
                         Macro_Setores: analiseAvancada.macroSetores.length > 0 ? analiseAvancada.macroSetores.join(', ') : "-"
                     });
 
-                    // O histórico agora salvará o objeto `analise` completo, com a aba analiseAvancada acoplada
-                    HistoryRepository.salvar(supabaseClient, empresa, analise);
+                    // O histórico agora salvará o objeto `analise` completo, com a aba analiseAvancada acoplada.
+                    // Erro ao salvar histórico não deve impedir a linha de aparecer como sucesso no lote.
+                    try {
+                        await HistoryRepository.salvar(supabaseClient, empresa, analise);
+                    } catch (histErr) {
+                        console.error('Erro ao salvar histórico do item de lote:', histErr);
+                    }
                     onRowComplete(formatted, empresa, analise, 'Sucesso', null);
                 } catch (err) {
                     onRowComplete(formatted, null, null, 'Erro', err.message);
