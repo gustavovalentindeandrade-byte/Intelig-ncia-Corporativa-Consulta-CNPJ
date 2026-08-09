@@ -6,7 +6,7 @@ export const UI = {
         if (!container) return;
         if (data && data.length > 0) {
             container.innerHTML = data.map(d => 
-                `<span class="badge bg-secondary cursor-pointer" data-cnpj="${d.cnpj}">${Utils.formatCNPJ(d.cnpj)} - ${(d.razao_social||'').substring(0,18)}...</span>`
+                `<span class="badge bg-secondary cursor-pointer" data-cnpj="${Utils.escapeHtml(d.cnpj)}">${Utils.formatCNPJ(d.cnpj)} - ${Utils.escapeHtml((d.razao_social||'').substring(0,18))}...</span>`
             ).join('');
             container.querySelectorAll('span').forEach(span => {
                 span.addEventListener('click', () => {
@@ -43,10 +43,11 @@ export const UI = {
         motivacaoEl.style.whiteSpace = "pre-line";
         motivacaoEl.textContent = analise.motivacaoIndustrial;
 
-        const resumo = `A empresa <strong>${empresa.razaoSocial}</strong> (CNPJ: ${Utils.formatCNPJ(empresa.cnpj)}), localizada em ${empresa.municipio}/${empresa.uf}, enquadrada como <strong>${analise.perfil}</strong>, possui porte <strong>${empresa.porte || 'N/A'}</strong>. Atividade principal: <strong>${empresa.cnaePrincipalCod} - ${empresa.cnaePrincipalDesc}</strong>, com ${empresa.cnaesSecundarios ? empresa.cnaesSecundarios.length : 0} atividade(s) secundária(s). Situação Cadastral: <em>${empresa.situacaoCadastral || '-'}</em> (Aberta em ${Utils.formatDate(empresa.dataAbertura)}).`;
+        const esc = Utils.escapeHtml;
+        const resumo = `A empresa <strong>${esc(empresa.razaoSocial)}</strong> (CNPJ: ${Utils.formatCNPJ(empresa.cnpj)}), localizada em ${esc(empresa.municipio)}/${esc(empresa.uf)}, enquadrada como <strong>${esc(analise.perfil)}</strong>, possui porte <strong>${esc(empresa.porte || 'N/A')}</strong>. Atividade principal: <strong>${esc(empresa.cnaePrincipalCod)} - ${esc(empresa.cnaePrincipalDesc)}</strong>, com ${empresa.cnaesSecundarios ? empresa.cnaesSecundarios.length : 0} atividade(s) secundária(s). Situação Cadastral: <em>${esc(empresa.situacaoCadastral || '-')}</em> (Aberta em ${Utils.formatDate(empresa.dataAbertura)}).`;
         document.getElementById('resumoTexto').innerHTML = resumo;
 
-        document.getElementById('valCnaePrincipal').innerHTML = `<strong>${empresa.cnaePrincipalCod}</strong> - ${empresa.cnaePrincipalDesc} <span class="badge bg-primary ms-2">Principal</span>`;
+        document.getElementById('valCnaePrincipal').innerHTML = `<strong>${esc(empresa.cnaePrincipalCod)}</strong> - ${esc(empresa.cnaePrincipalDesc)} <span class="badge bg-primary ms-2">Principal</span>`;
 
         const tbody = document.getElementById('listCnaeSecundarioTable');
         tbody.innerHTML = '';
@@ -57,8 +58,8 @@ export const UI = {
             const badgeInd = item.isIndustrial ? '<span class="badge bg-success">Industrial (Presente na Base)</span>' : '<span class="badge bg-light text-dark border">Não Industrial</span>';
             
             tr.innerHTML = `
-                <td class="font-weight-bold">${item.codigo}</td>
-                <td>${item.descricao}</td>
+                <td class="font-weight-bold">${esc(item.codigo)}</td>
+                <td>${esc(item.descricao)}</td>
                 <td>${badgeTipo}</td>
                 <td>${badgeInd}</td>
             `;
@@ -88,16 +89,16 @@ export const UI = {
         // Montagem das Linhas da Tabela
         const trs = analiseAvancada.resultados.map(cnae => `
             <tr>
-                <td class="font-monospace fw-bold">${cnae.codigo}</td>
-                <td class="small">${cnae.descricao}</td>
+                <td class="font-monospace fw-bold">${Utils.escapeHtml(cnae.codigo)}</td>
+                <td class="small">${Utils.escapeHtml(cnae.descricao)}</td>
                 <td><span class="badge ${cnae.principal ? 'bg-primary' : 'bg-secondary'}">${cnae.principal ? 'Principal' : 'Secundária'}</span></td>
                 <td><span class="badge ${cnae.industrial === 'SIM' ? 'bg-success' : 'bg-light text-dark border'}">${cnae.industrial}</span></td>
-                <td>${cnae.carteira}</td>
-                <td>${cnae.macroSetor}</td>
+                <td>${Utils.escapeHtml(cnae.carteira)}</td>
+                <td>${Utils.escapeHtml(cnae.macroSetor)}</td>
             </tr>
         `).join('');
 
-        const formatarLista = (lista) => lista && lista.length > 0 ? lista.join(', ') : '-';
+        const formatarLista = (lista) => lista && lista.length > 0 ? Utils.escapeHtml(lista.join(', ')) : '-';
 
         // Injeção do Layout Dinâmico
         section.innerHTML = `
@@ -147,7 +148,7 @@ export const UI = {
     showAlert(message, type) {
         const alertContainer = document.getElementById('alertContainer');
         if (alertContainer) {
-            alertContainer.innerHTML = `<div class="alert alert-${type} shadow-sm"><i class="fa-solid fa-circle-exclamation me-2"></i> ${message}</div>`;
+            alertContainer.innerHTML = `<div class="alert alert-${type} shadow-sm"><i class="fa-solid fa-circle-exclamation me-2"></i> ${Utils.escapeHtml(message)}</div>`;
         }
     },
 
