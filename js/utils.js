@@ -40,5 +40,17 @@ export const Utils = {
     normalizeCnae(code) {
         if (!code) return '';
         return code.toString().replace(/\D/g, '');
+    },
+
+    // Evita XSS ao injetar em innerHTML dados vindos de APIs externas ou do Supabase
+    // (razão social, descrições de CNAE, endereço etc. não são confiáveis por padrão).
+    escapeHtml(value) {
+        if (value === null || value === undefined) return '';
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 };
