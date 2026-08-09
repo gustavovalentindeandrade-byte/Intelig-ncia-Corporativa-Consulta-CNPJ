@@ -34,6 +34,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ==========================================
+// UTILITÁRIO DE SEGURANÇA (evita XSS ao injetar dados vindos da API)
+// ==========================================
+function escapeHtml(valor) {
+    if (valor === null || valor === undefined) return '';
+    return String(valor)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// ==========================================
 // MÓDULOS DE CONFIGURAÇÃO DA INTERFACE
 // ==========================================
 
@@ -106,10 +119,54 @@ function setupActionButtons() {
     const btnPDF = document.getElementById('btnPDF');
     const btnExcel = document.getElementById('btnExcel');
 
-    if (btnCopiar) btnCopiar.addEventListener('click', () => ExportService.copiar(AppState.companyData, AppState.analiseData));
-    if (btnImprimir) btnImprimir.addEventListener('click', () => ExportService.imprimir());
-    if (btnPDF) btnPDF.addEventListener('click', () => ExportService.pdf(AppState.companyData));
-    if (btnExcel) btnExcel.addEventListener('click', () => ExportService.excelIndividual(AppState.companyData, AppState.analiseData));
+    // Guarda contra clique sem consulta realizada ainda (evita passar null/undefined para o ExportService)
+    const exigirConsulta = (fn) => (...args) => {
+        if (!AppState.companyData) {
+            UI.showAlert('Realize uma consulta antes de exportar.', 'warning');
+            return;
+        }
+        fn(...args);
+    };
+
+    if (btnCopiar) btnCopiar.addEventListener('click', exigirConsulta(() => ExportService.copiar(AppState.companyData, AppState.analiseData)));
+    if (btnImprimir) btnImprimir.addEventListener('click', exigirConsulta(() => ExportService.imprimir()));
+    if (btnPDF) btnPDF.addEventListener('click', exigirConsulta(() => ExportService.pdf(AppState.companyData, AppState.analiseData)));
+    if (btnExcel) btnExcel.addEventListener('click', exigirConsulta(() => ExportService.excelIndividual(AppState.companyData, AppState.analiseData)));
+}
+
+// ==========================================
+// CONSTRUÇÃO SEGURA DE LINHAS DA TABELA DE LOTE
+// ==========================================
+function criarLinhaErro(formattedCnpj, errorMsg, statusLabel, badgeClass) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td class="font-monospace">${escapeHtml(formattedCnpj)}</td>
+        <td colspan="6" class="text-danger">${escapeHtml(errorMsg)}</td>
+        <td><span class="badge ${badgeClass}">${escapeHtml(statusLabel)}</span></td>
+    `;
+    return tr;
+}
+
+function criarLinhaSucesso(formattedCnpj, empresa, analise) {
+    const badgeIndHtml = analise.possuiIndustrial
+        ? '<span class="badge bg-success">✅ Possui Industrial</span>'
+        : '<span class="badge bg-danger">❌ Não Possui</span>';
+    const listaCnaesStr = analise.cnaesIndustriaisLista.length > 0
+        ? analise.cnaesIndustriaisLista.join(", ")
+        : "-";
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td class="font-monospace">${escapeHtml(formattedCnpj)}</td>
+        <td>${escapeHtml(empresa.razaoSocial || '-')}</td>
+        <td>${escapeHtml(empresa.porte || '-')}</td>
+        <td><span class="badge bg-primary">${escapeHtml(analise.perfil)}</span></td>
+        <td>${escapeHtml(empresa.municipio || '-')}/${escapeHtml(empresa.uf || '-')}</td>
+        <td>${badgeIndHtml}</td>
+        <td class="small text-muted">${escapeHtml(listaCnaesStr)}</td>
+        <td><span class="badge bg-success">Sucesso</span></td>
+    `;
+    return { tr, listaCnaesStr };
 }
 
 function setupBatchProcessing() {
@@ -131,47 +188,46 @@ function setupBatchProcessing() {
         if (!batchInputEl) return;
 
         const rawText = batchInputEl.value;
+        if (!rawText || !rawText.trim()) {
+            UI.showAlert('Cole ao menos um CNPJ antes de processar o lote.', 'warning');
+            return;
+        }
+
         if (tbody) tbody.innerHTML = '';
         if (batchResultContainer) batchResultContainer.classList.remove('d-none');
         btnProcessarLote.disabled = true;
         if (btnExportarLoteExcel) btnExportarLoteExcel.classList.add('d-none');
-        
+
         AppState.batchResults = []; // Limpa resultados anteriores
 
         const checkAnaliseSecundariosEl = document.getElementById('checkAnaliseSecundarios');
         const analisarSecundarias = checkAnaliseSecundariosEl ? checkAnaliseSecundariosEl.checked : true;
 
-        await BatchService.processarLote(
-            rawText,
-            AppState.supabaseClient,
-            analisarSecundarias,
-            (current, total) => {
-                if (progressSpan) progressSpan.textContent = `Processando ${current} de ${total}...`;
-            },
-            (formattedCnpj, empresa, analise, status, errorMsg) => {
-                if (!tbody) return;
-                const tr = document.createElement('tr');
-                
-                if (status === 'Inválido') {
-                    tr.innerHTML = `<td>${formattedCnpj}</td><td colspan="6" class="text-danger">${errorMsg}</td><td><span class="badge bg-danger">Inválido</span></td>`;
-                } else if (status === 'Erro') {
-                    tr.innerHTML = `<td>${formattedCnpj}</td><td colspan="6" class="text-danger">${errorMsg}</td><td><span class="badge bg-danger">Erro API</span></td>`;
-                } else {
-                    const badgeIndHtml = analise.possuiIndustrial ? 
-                        '<span class="badge bg-success">✅ Possui Industrial</span>' : 
-                        '<span class="badge bg-danger">❌ Não Possui</span>';
-                    const listaCnaesStr = analise.cnaesIndustriaisLista.length > 0 ? analise.cnaesIndustriaisLista.join(", ") : "-";
+        // try/catch/finally garante que o botão nunca fique travado em "Processando..."
+        // caso o BatchService lance uma exceção não tratada.
+        try {
+            await BatchService.processarLote(
+                rawText,
+                AppState.supabaseClient,
+                analisarSecundarias,
+                (current, total) => {
+                    if (progressSpan) progressSpan.textContent = `Processando ${current} de ${total}...`;
+                },
+                (formattedCnpj, empresa, analise, status, errorMsg) => {
+                    if (!tbody) return;
 
-                    tr.innerHTML = `
-                        <td class="font-monospace">${formattedCnpj}</td>
-                        <td>${empresa.razaoSocial || '-'}</td>
-                        <td>${empresa.porte || '-'}</td>
-                        <td><span class="badge bg-primary">${analise.perfil}</span></td>
-                        <td>${empresa.municipio || '-'}/${empresa.uf || '-'}</td>
-                        <td>${badgeIndHtml}</td>
-                        <td class="small text-muted">${listaCnaesStr}</td>
-                        <td><span class="badge bg-success">Sucesso</span></td>
-                    `;
+                    if (status === 'Inválido') {
+                        tbody.appendChild(criarLinhaErro(formattedCnpj, errorMsg, 'Inválido', 'bg-danger'));
+                        return;
+                    }
+
+                    if (status === 'Erro') {
+                        tbody.appendChild(criarLinhaErro(formattedCnpj, errorMsg, 'Erro API', 'bg-danger'));
+                        return;
+                    }
+
+                    const { tr, listaCnaesStr } = criarLinhaSucesso(formattedCnpj, empresa, analise);
+                    tbody.appendChild(tr);
 
                     const adv = analise.analiseAvancada || {};
                     AppState.batchResults.push({
@@ -187,17 +243,22 @@ function setupBatchProcessing() {
                         Carteiras: adv.carteiras && adv.carteiras.length > 0 ? adv.carteiras.join(', ') : "-",
                         Macro_Setores: adv.macroSetores && adv.macroSetores.length > 0 ? adv.macroSetores.join(', ') : "-"
                     });
+                },
+                (results) => {
+                    if (progressSpan) progressSpan.textContent = `Lote processado com sucesso! (${results.length} empresas analisadas)`;
+                    if (AppState.batchResults.length > 0 && btnExportarLoteExcel) {
+                        btnExportarLoteExcel.classList.remove('d-none');
+                    }
                 }
-                tbody.appendChild(tr);
-            },
-            (results) => {
-                if (progressSpan) progressSpan.textContent = `Lote processado com sucesso! (${results.length} empresas analisadas)`;
-                btnProcessarLote.disabled = false;
-                if (AppState.batchResults.length > 0 && btnExportarLoteExcel) {
-                    btnExportarLoteExcel.classList.remove('d-none');
-                }
-            }
-        );
+            );
+        } catch (error) {
+            console.error("Erro ao processar lote:", error);
+            if (progressSpan) progressSpan.textContent = 'Falha ao processar o lote.';
+            UI.showAlert(error.message || 'Erro desconhecido ao processar o lote.', 'danger');
+        } finally {
+            // Sempre reabilita o botão, com sucesso ou falha
+            btnProcessarLote.disabled = false;
+        }
     });
 }
 
@@ -226,10 +287,10 @@ async function realizarConsulta() {
 
         const checkSec = document.getElementById('checkAnaliseSecundarios');
         const analisarSecundarias = checkSec ? checkSec.checked : true;
-        
+
         // 2. Análise legada síncrona
         const analise = IndustrialService.analisar(empresa, analisarSecundarias);
-        
+
         // 3. Análise avançada via Supabase (Reutilizando conexão)
         const analiseAvancada = await IndustrialService.obterClassificacaoAvancada(empresa, analisarSecundarias, AppState.supabaseClient);
         analise.analiseAvancada = analiseAvancada;
@@ -239,19 +300,26 @@ async function realizarConsulta() {
         UI.renderFicha(empresa, analise);
 
         // 5. Salva no histórico e atualiza a barra lateral
+        //    Erro aqui não deve derrubar a consulta que já foi exibida com sucesso.
         if (AppState.supabaseClient) {
-            await HistoryRepository.salvar(AppState.supabaseClient, empresa, analise);
-            const novoHistorico = await HistoryRepository.carregar(AppState.supabaseClient);
-            UI.renderHistory(novoHistorico, (cnpjSel) => {
-                inputCnpj.value = Utils.formatCNPJ(cnpjSel);
-                realizarConsulta();
-            });
+            try {
+                await HistoryRepository.salvar(AppState.supabaseClient, empresa, analise);
+                const novoHistorico = await HistoryRepository.carregar(AppState.supabaseClient);
+                UI.renderHistory(novoHistorico, (cnpjSel) => {
+                    inputCnpj.value = Utils.formatCNPJ(cnpjSel);
+                    realizarConsulta();
+                });
+            } catch (histError) {
+                console.error("Erro ao salvar/atualizar histórico:", histError);
+            }
         }
 
         UI.toggleLoading(false);
         UI.toggleResult(true);
     } catch (error) {
+        console.error("Erro ao realizar consulta:", error);
         UI.toggleLoading(false);
+        UI.toggleResult(false);
         UI.showAlert(error.message || 'Erro desconhecido ao realizar consulta.', 'danger');
     }
 }
