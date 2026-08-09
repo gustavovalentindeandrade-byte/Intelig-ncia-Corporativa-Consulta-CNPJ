@@ -16,7 +16,9 @@ export const ExportService = {
             texto += `\nMacro Setores: ${adv.macroSetores.length > 0 ? adv.macroSetores.join(', ') : '-'}`;
         }
 
-        navigator.clipboard.writeText(texto).then(() => alert('Dados copiados para a área de transferência!'));
+        navigator.clipboard.writeText(texto)
+            .then(() => alert('Dados copiados para a área de transferência!'))
+            .catch(() => alert('Não foi possível copiar automaticamente. Verifique as permissões do navegador.'));
     },
 
     imprimir() {
