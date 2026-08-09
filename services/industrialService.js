@@ -205,19 +205,20 @@ export const IndustrialService = {
 
                 if (matchDB) {
                     isInd = matchDB.industrial === true || String(matchDB.industrial).toUpperCase() === 'SIM';
-                    if (isInd) {
-                        cart = matchDB.carteira || "-";
-                        macro = matchDB.macro_setor || "CNAE não industrial e não relacionado";
-                    }
+                    // Carteira e Macro Setor vêm do banco independentemente de o CNAE ser
+                    // industrial ou não (ex.: "-" / "P&D", "-" / "Diversos (Outros)" são
+                    // classificações válidas para CNAEs não industriais).
+                    cart = matchDB.carteira || "-";
+                    macro = matchDB.macro_setor || "CNAE não industrial e não relacionado";
                 }
 
                 if (isInd) {
                     qtdInd++;
-                    if (cart !== "-") setCarteiras.add(cart);
-                    if (macro !== "CNAE não industrial e não relacionado") setMacroSetores.add(macro);
                 } else {
                     qtdNaoInd++;
                 }
+                if (cart !== "-") setCarteiras.add(cart);
+                if (macro !== "CNAE não industrial e não relacionado") setMacroSetores.add(macro);
 
                 resultadosTabela.push({
                     codigo: cnae.codigo,
